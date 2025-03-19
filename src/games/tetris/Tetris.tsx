@@ -1,24 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
-import {
-  BOARD_WIDTH,
-  BOARD_HEIGHT,
-  POINTS,
-  KEYS,
-  DAS_DELAY,
-  ARR_DELAY,
-  TETROMINOS,
-  TetrominoType,
-} from './constants'
-import {
-  Board,
-  Cell,
-  Tetromino,
-  GameStatus,
-  GameStats,
-  KeyState,
-} from './types'
+import { BOARD_WIDTH, POINTS } from './constants'
+import { Board, Tetromino, GameStatus, GameStats } from './types'
 import {
   createEmptyBoard,
   createRandomTetromino,
@@ -54,9 +38,6 @@ const Tetris: React.FC = () => {
     totalPieces: 0,
   })
   const [ghostPosition, setGhostPosition] = useState<number>(0)
-
-  // 키 상태 관리
-  const [keyState, setKeyState] = useState<KeyState>({})
 
   // 게임 루프 관리
   const gameLoopRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -188,6 +169,78 @@ const Tetris: React.FC = () => {
     }
   }, [board, currentPiece, gameStatus])
 
+  // 조각 배치 및 라인 제거 처리
+  const placePiece = useCallback(
+    (piece: Tetromino) => {
+      if (!piece) return
+
+      // 보드에 조각 고정
+      const newBoard = lockTetromino(board, piece)
+      // 완성된 라인 제거
+      const { newBoard: boardAfterClear, linesCleared } = clearLines(newBoard)
+
+      // 게임 오버 체크
+      const isGameOver =
+        nextPiece &&
+        isColliding(boardAfterClear, {
+          ...nextPiece,
+          position: {
+            x: Math.floor((BOARD_WIDTH - nextPiece.shape[0].length) / 2),
+            y: 0,
+          },
+        })
+
+      if (isGameOver) {
+        setGameStatus(GameStatus.GAME_OVER)
+        setBoard(boardAfterClear)
+        saveGameStats(gameStats.score, gameStats.level, gameStats.lines)
+        return
+      }
+
+      setBoard(boardAfterClear)
+
+      // 점수 및 레벨 업데이트 - 라인이 실제로 제거된 경우에만 점수 추가
+      if (linesCleared > 0) {
+        setGameStats((prev) => {
+          let scoreIncrease = 0
+          let tetrisCount = prev.tetris
+
+          switch (linesCleared) {
+            case 1:
+              scoreIncrease = POINTS.SINGLE * prev.level
+              break
+            case 2:
+              scoreIncrease = POINTS.DOUBLE * prev.level
+              break
+            case 3:
+              scoreIncrease = POINTS.TRIPLE * prev.level
+              break
+            case 4:
+              scoreIncrease = POINTS.TETRIS * prev.level
+              tetrisCount += 1
+              break
+            default:
+              break
+          }
+
+          const newLines = prev.lines + linesCleared
+          const newLevel = Math.floor(newLines / 10) + 1
+
+          return {
+            score: prev.score + scoreIncrease,
+            level: newLevel,
+            lines: newLines,
+            tetris: tetrisCount,
+            totalPieces: prev.totalPieces,
+          }
+        })
+      }
+
+      generateNextPiece()
+    },
+    [board, nextPiece, generateNextPiece, gameStats]
+  )
+
   // 하드 드롭 기능
   const hardDrop = useCallback(() => {
     if (!currentPiece || gameStatus !== GameStatus.PLAYING) return
@@ -217,7 +270,7 @@ const Tetris: React.FC = () => {
 
     setCurrentPiece(newPiece)
     placePiece(newPiece)
-  }, [board, currentPiece, gameStatus])
+  }, [board, currentPiece, gameStatus, placePiece])
 
   // 홀드 기능
   const holdCurrentPiece = useCallback(() => {
@@ -337,78 +390,6 @@ const Tetris: React.FC = () => {
     }
   }, [gameStatus])
 
-  // 조각 배치 및 라인 제거 처리
-  const placePiece = useCallback(
-    (piece: Tetromino) => {
-      if (!piece) return
-
-      // 보드에 조각 고정
-      const newBoard = lockTetromino(board, piece)
-      // 완성된 라인 제거
-      const { newBoard: boardAfterClear, linesCleared } = clearLines(newBoard)
-
-      // 게임 오버 체크
-      const isGameOver =
-        nextPiece &&
-        isColliding(boardAfterClear, {
-          ...nextPiece,
-          position: {
-            x: Math.floor((BOARD_WIDTH - nextPiece.shape[0].length) / 2),
-            y: 0,
-          },
-        })
-
-      if (isGameOver) {
-        setGameStatus(GameStatus.GAME_OVER)
-        setBoard(boardAfterClear)
-        saveGameStats(gameStats.score, gameStats.level, gameStats.lines)
-        return
-      }
-
-      setBoard(boardAfterClear)
-
-      // 점수 및 레벨 업데이트 - 라인이 실제로 제거된 경우에만 점수 추가
-      if (linesCleared > 0) {
-        setGameStats((prev) => {
-          let scoreIncrease = 0
-          let tetrisCount = prev.tetris
-
-          switch (linesCleared) {
-            case 1:
-              scoreIncrease = POINTS.SINGLE * prev.level
-              break
-            case 2:
-              scoreIncrease = POINTS.DOUBLE * prev.level
-              break
-            case 3:
-              scoreIncrease = POINTS.TRIPLE * prev.level
-              break
-            case 4:
-              scoreIncrease = POINTS.TETRIS * prev.level
-              tetrisCount += 1
-              break
-            default:
-              break
-          }
-
-          const newLines = prev.lines + linesCleared
-          const newLevel = Math.floor(newLines / 10) + 1
-
-          return {
-            score: prev.score + scoreIncrease,
-            level: newLevel,
-            lines: newLines,
-            tetris: tetrisCount,
-            totalPieces: prev.totalPieces,
-          }
-        })
-      }
-
-      generateNextPiece()
-    },
-    [board, nextPiece, generateNextPiece, gameStats]
-  )
-
   // 게임 루프
   const gameLoop = useCallback(() => {
     if (gameStatus !== GameStatus.PLAYING || !currentPiece) {
@@ -459,17 +440,13 @@ const Tetris: React.FC = () => {
 
   // 게임 초기화 및 이벤트 리스너 설정
   useEffect(() => {
-    let isInitialized = false
-
-    if (!isInitialized) {
-      initGame()
-      isInitialized = true
-    }
-  }, [])
+    initGame()
+  }, [initGame])
 
   // 게임 루프 관리
   useEffect(() => {
     let frameId: number
+    const currentGameLoopRef = gameLoopRef.current
 
     if (gameStatus === GameStatus.PLAYING && currentPiece) {
       const runGameLoop = () => {
@@ -481,8 +458,8 @@ const Tetris: React.FC = () => {
 
       return () => {
         cancelAnimationFrame(frameId)
-        if (gameLoopRef.current) {
-          clearTimeout(gameLoopRef.current)
+        if (currentGameLoopRef) {
+          clearTimeout(currentGameLoopRef)
         }
       }
     }
@@ -496,7 +473,7 @@ const Tetris: React.FC = () => {
         setGhostPosition(newGhostPosition)
       }
     }
-  }, [currentPiece?.position, board, gameStatus])
+  }, [currentPiece, board, gameStatus, ghostPosition])
 
   // 플레이어 통계 로드
   const playerStats = loadGameStats()
