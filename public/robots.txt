@@ -1,0 +1,11 @@
+# 모든 검색 엔진 크롤러에 대한 규칙
+User-agent: *
+Allow: /
+
+# 사이트맵 위치
+Sitemap: https://game.hajoeun.com/sitemap.xml
+
+# 크롤링 제한
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/ 

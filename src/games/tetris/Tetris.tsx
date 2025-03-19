@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { BOARD_WIDTH, POINTS } from './constants'
 import { Board, Tetromino, GameStatus, GameStats } from './types'
 import {
@@ -480,6 +481,36 @@ const Tetris: React.FC = () => {
 
   return (
     <TetrisContainer>
+      <Helmet>
+        <title>테트리스 - 브라우저 아케이드</title>
+        <meta
+          name="description"
+          content="클래식 테트리스 게임을 무료로 즐겨보세요. 최고 점수를 기록하고 친구들과 경쟁해보세요."
+        />
+        <meta
+          name="keywords"
+          content="테트리스, 무료 테트리스, 온라인 테트리스, 브라우저 게임, 퍼즐 게임"
+        />
+
+        {/* Open Graph 메타 태그 */}
+        <meta property="og:title" content="테트리스 - 브라우저 아케이드" />
+        <meta
+          property="og:description"
+          content="클래식 테트리스 게임을 무료로 즐겨보세요. 최고 점수를 기록하고 친구들과 경쟁해보세요."
+        />
+        <meta property="og:type" content="game" />
+        <meta property="og:image" content="/images/tetris-thumbnail.png" />
+
+        {/* Twitter Card 메타 태그 */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="테트리스 - 브라우저 아케이드" />
+        <meta
+          name="twitter:description"
+          content="클래식 테트리스 게임을 무료로 즐겨보세요. 최고 점수를 기록하고 친구들과 경쟁해보세요."
+        />
+        <meta name="twitter:image" content="/images/tetris-thumbnail.png" />
+      </Helmet>
+
       <Header>
         <div>
           <Link to="/">홈으로</Link>
