@@ -30,9 +30,14 @@ const App: React.FC = () => {
             content="다양한 무료 브라우저 게임을 즐겨보세요. 테트리스 등 클래식 게임부터 최신 게임까지 제공합니다."
           />
           <meta property="og:type" content="website" />
+          <meta property="og:url" content="https://game.hajoeun.com" />
           <meta
             property="og:image"
             content="https://game.hajoeun.com/images/og-image.png"
+          />
+          <meta
+            property="og:logo"
+            content="https://game.hajoeun.com/images/logo.png"
           />
 
           {/* Twitter Card 메타 태그 */}
