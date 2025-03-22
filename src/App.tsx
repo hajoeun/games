@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { HelmetProvider, Helmet } from 'react-helmet-async'
 import Home from './pages/Home'
 import Tetris from './games/tetris/Tetris'
+import Breakout from './games/breakout/Breakout'
 
 const App: React.FC = () => {
   return (
@@ -68,6 +69,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/games/tetris" element={<Tetris />} />
+            <Route path="/games/breakout" element={<Breakout />} />
           </Routes>
         </Router>
       </AppContainer>
