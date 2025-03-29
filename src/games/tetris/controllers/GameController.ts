@@ -11,6 +11,102 @@ type GameControllerCallback = {
   onRestart: () => void
 }
 
+// 터치 컨트롤러 클래스 추가
+export class TouchController {
+  private callbacks: GameControllerCallback
+  private isEnabled: boolean = true
+  private touchStartX: number = 0
+  private touchStartY: number = 0
+  private swipeThreshold: number = 30
+  private tapTimeout: number | null = null
+  private doubleTapDelay: number = 300
+
+  constructor(callbacks: GameControllerCallback) {
+    this.callbacks = callbacks
+    this.handleTouchStart = this.handleTouchStart.bind(this)
+    this.handleTouchMove = this.handleTouchMove.bind(this)
+    this.handleTouchEnd = this.handleTouchEnd.bind(this)
+  }
+
+  public enable(): void {
+    this.isEnabled = true
+  }
+
+  public disable(): void {
+    this.isEnabled = false
+  }
+
+  public attach(element: HTMLElement): void {
+    element.addEventListener('touchstart', this.handleTouchStart, { passive: false })
+    element.addEventListener('touchmove', this.handleTouchMove, { passive: false })
+    element.addEventListener('touchend', this.handleTouchEnd, { passive: false })
+  }
+
+  public detach(element: HTMLElement): void {
+    element.removeEventListener('touchstart', this.handleTouchStart)
+    element.removeEventListener('touchmove', this.handleTouchMove)
+    element.removeEventListener('touchend', this.handleTouchEnd)
+  }
+
+  private handleTouchStart(e: TouchEvent): void {
+    if (!this.isEnabled) return
+    
+    e.preventDefault()
+    const touch = e.touches[0]
+    this.touchStartX = touch.clientX
+    this.touchStartY = touch.clientY
+  }
+
+  private handleTouchMove(e: TouchEvent): void {
+    if (!this.isEnabled) return
+    
+    e.preventDefault()
+  }
+
+  private handleTouchEnd(e: TouchEvent): void {
+    if (!this.isEnabled) return
+    
+    e.preventDefault()
+    const touch = e.changedTouches[0]
+    const deltaX = touch.clientX - this.touchStartX
+    const deltaY = touch.clientY - this.touchStartY
+    const absX = Math.abs(deltaX)
+    const absY = Math.abs(deltaY)
+
+    // 스와이프 제스처 감지
+    if (Math.max(absX, absY) > this.swipeThreshold) {
+      // 좌우 스와이프가 상하 스와이프보다 크면
+      if (absX > absY) {
+        if (deltaX > 0) {
+          this.callbacks.onMoveRight() // 오른쪽 스와이프
+        } else {
+          this.callbacks.onMoveLeft() // 왼쪽 스와이프
+        }
+      } else {
+        if (deltaY > 0) {
+          this.callbacks.onHardDrop() // 아래로 스와이프 (하드 드롭)
+        } else {
+          this.callbacks.onRotate() // 위로 스와이프 (회전)
+        }
+      }
+    } else {
+      // 탭 제스처 (더블 탭 감지를 위한 로직)
+      if (this.tapTimeout === null) {
+        this.tapTimeout = window.setTimeout(() => {
+          // 싱글 탭 - 소프트 드롭
+          this.callbacks.onMoveDown()
+          this.tapTimeout = null
+        }, this.doubleTapDelay)
+      } else {
+        // 더블 탭 - 홀드
+        clearTimeout(this.tapTimeout)
+        this.tapTimeout = null
+        this.callbacks.onHold()
+      }
+    }
+  }
+}
+
 export class GameController {
   private callbacks: GameControllerCallback
   private keyState: { [key: string]: boolean } = {}

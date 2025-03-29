@@ -56,7 +56,7 @@ const TetrisBoard: React.FC<TetrisBoardProps> = ({
 
   return (
     <div
-      className="flex flex-col border-2 border-[#333] bg-black p-0.5 shadow-[0_0_20px_rgba(0,0,0,0.4)]"
+      className="flex flex-col border-2 border-[#333] bg-black p-0.5 shadow-[0_0_20px_rgba(0,0,0,0.4)] touch-none mx-auto"
       data-testid="tetris-board"
     >
       {board.map((row, y) => (
@@ -74,9 +74,20 @@ const TetrisBoard: React.FC<TetrisBoardProps> = ({
             return (
               <div
                 key={x}
-                className={`w-[30px] h-[30px] border border-[#222] md:w-[25px] md:h-[25px] sm:w-[20px] sm:h-[20px]`}
+                className={`
+                  w-[30px] h-[30px] 
+                  border border-[#222] 
+                  md:w-[25px] md:h-[25px] 
+                  sm:w-[28px] sm:h-[28px]
+                  xs:w-[30px] xs:h-[30px]
+                  2xs:w-[26px] 2xs:h-[26px]
+                  3xs:w-[22px] 3xs:h-[22px]
+                `}
                 style={{
                   backgroundColor: isFilled ? cellColor : 'transparent',
+                  boxShadow: isFilled
+                    ? 'inset 2px 2px 2px rgba(255,255,255,0.2), inset -2px -2px 2px rgba(0,0,0,0.2)'
+                    : 'none',
                 }}
               />
             )

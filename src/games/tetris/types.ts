@@ -25,7 +25,8 @@ export type Tetromino = {
 export enum GameStatus {
   PLAYING = 'PLAYING',
   PAUSED = 'PAUSED',
-  GAME_OVER = 'GAME_OVER'
+  GAME_OVER = 'GAME_OVER',
+  START_SCREEN = 'START_SCREEN'
 }
 
 // 게임 통계 타입

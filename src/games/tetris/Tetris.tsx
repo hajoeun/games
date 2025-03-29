@@ -20,16 +20,22 @@ import NextPiece from './components/NextPiece'
 import HoldPiece from './components/HoldPiece'
 import GameControls from './components/GameControls'
 import GameInfo from './components/GameInfo'
-import { GameController } from './controllers/GameController'
+import MobileControls from './components/MobileControls'
+import { GameController, TouchController } from './controllers/GameController'
 
 const Tetris: React.FC = () => {
+  // 모바일 여부 감지
+  const [isMobile, setIsMobile] = useState<boolean>(false)
+
   // 게임 상태 관리
   const [board, setBoard] = useState<Board>(createEmptyBoard())
   const [currentPiece, setCurrentPiece] = useState<Tetromino | null>(null)
   const [nextPiece, setNextPiece] = useState<Tetromino | null>(null)
   const [holdPiece, setHoldPiece] = useState<Tetromino | null>(null)
   const [hasHoldUsed, setHasHoldUsed] = useState<boolean>(false)
-  const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.PLAYING)
+  const [gameStatus, setGameStatus] = useState<GameStatus>(
+    GameStatus.START_SCREEN
+  ) // 초기 상태를 시작 화면으로 변경
   const [gameStats, setGameStats] = useState<GameStats>({
     score: 0,
     level: 1,
@@ -45,6 +51,41 @@ const Tetris: React.FC = () => {
 
   // 게임 컨트롤러 참조
   const controllerRef = useRef<GameController | null>(null)
+  const touchControllerRef = useRef<TouchController | null>(null)
+  const boardRef = useRef<HTMLDivElement>(null)
+
+  // 모바일 환경 감지
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const userAgent = navigator.userAgent.toLowerCase()
+      const isMobileDevice =
+        /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(
+          userAgent
+        )
+      setIsMobile(isMobileDevice || window.innerWidth < 768)
+    }
+
+    checkIfMobile()
+    window.addEventListener('resize', checkIfMobile)
+
+    return () => {
+      window.removeEventListener('resize', checkIfMobile)
+    }
+  }, [])
+
+  // 게임 시작 함수
+  const startGame = useCallback(() => {
+    initGame()
+    setGameStatus(GameStatus.PLAYING)
+
+    // 컨트롤러 활성화
+    if (controllerRef.current) {
+      controllerRef.current.enable()
+    }
+    if (touchControllerRef.current) {
+      touchControllerRef.current.enable()
+    }
+  }, [])
 
   // 게임 초기화 함수
   const initGame = useCallback(() => {
@@ -62,7 +103,6 @@ const Tetris: React.FC = () => {
     setHoldPiece(null)
     setHasHoldUsed(false)
     setGhostPosition(initialGhostPosition)
-    setGameStatus(GameStatus.PLAYING)
     setGameStats({
       score: 0,
       lines: 0,
@@ -248,6 +288,7 @@ const Tetris: React.FC = () => {
     let dropDistance = 0
     let newPosition = { ...currentPiece.position }
 
+    // 바닥까지 얼마나 떨어질 수 있는지 계산
     while (
       !isColliding(board, {
         ...currentPiece,
@@ -258,18 +299,23 @@ const Tetris: React.FC = () => {
       dropDistance += 1
     }
 
+    // 점수 추가
     setGameStats((prev) => ({
       ...prev,
       score: prev.score + POINTS.HARD_DROP * dropDistance,
     }))
 
-    const newPiece = {
+    // 새 위치로 조각 업데이트
+    setCurrentPiece({
       ...currentPiece,
       position: newPosition,
-    }
+    })
 
-    setCurrentPiece(newPiece)
-    placePiece(newPiece)
+    // 보드에 즉시 배치
+    placePiece({
+      ...currentPiece,
+      position: newPosition,
+    })
   }, [board, currentPiece, gameStatus, placePiece])
 
   // 홀드 기능
@@ -278,312 +324,391 @@ const Tetris: React.FC = () => {
       return
 
     if (holdPiece) {
-      const tempPiece = {
+      // 홀드에 이미 조각이 있으면 교체
+      const resetHoldPiece = {
         ...holdPiece,
         position: {
           x: Math.floor((BOARD_WIDTH - holdPiece.shape[0].length) / 2),
           y: 0,
         },
-        rotation: 0,
       }
 
       setHoldPiece({
         ...currentPiece,
-        position: { x: 0, y: 0 },
-        rotation: 0,
+        position: { x: 0, y: 0 }, // 홀드 위치 리셋
       })
-      setCurrentPiece(tempPiece)
-      setHasHoldUsed(true)
-      setGhostPosition(calculateGhostPosition(board, tempPiece))
+      setCurrentPiece(resetHoldPiece)
+      setGhostPosition(calculateGhostPosition(board, resetHoldPiece))
     } else {
+      // 홀드가 비어있으면 현재 조각 저장하고 다음 조각 가져오기
       setHoldPiece({
         ...currentPiece,
-        position: { x: 0, y: 0 },
-        rotation: 0,
+        position: { x: 0, y: 0 }, // 홀드 위치 리셋
       })
-      setHasHoldUsed(true)
       generateNextPiece()
     }
+
+    setHasHoldUsed(true)
   }, [
     currentPiece,
     holdPiece,
     hasHoldUsed,
     gameStatus,
-    generateNextPiece,
     board,
+    generateNextPiece,
   ])
 
-  // 게임 컨트롤러 콜백
-  const controllerCallbacks = useMemo(
-    () => ({
-      onMoveLeft: () => {
-        if (gameStatus === GameStatus.PLAYING) {
-          movePiece(-1)
-        }
-      },
-      onMoveRight: () => {
-        if (gameStatus === GameStatus.PLAYING) {
-          movePiece(1)
-        }
-      },
-      onMoveDown: () => {
-        if (gameStatus === GameStatus.PLAYING) {
-          moveDown()
-        }
-      },
-      onRotate: () => {
-        if (gameStatus === GameStatus.PLAYING) {
-          rotatePiece()
-        }
-      },
-      onHardDrop: () => {
-        if (gameStatus === GameStatus.PLAYING) {
-          hardDrop()
-        }
-      },
-      onHold: () => {
-        if (gameStatus === GameStatus.PLAYING) {
-          holdCurrentPiece()
-        }
-      },
-      onPause: () => {
-        setGameStatus((prev) =>
-          prev === GameStatus.PLAYING ? GameStatus.PAUSED : GameStatus.PLAYING
-        )
-      },
-      onRestart: () => {
-        initGame()
-      },
-    }),
-    [
-      gameStatus,
-      movePiece,
-      moveDown,
-      rotatePiece,
-      hardDrop,
-      holdCurrentPiece,
-      initGame,
-    ]
-  )
+  // 일시정지 / 재개 토글
+  const togglePause = useCallback(() => {
+    if (gameStatus === GameStatus.GAME_OVER) return
 
-  // 게임 컨트롤러 초기화 및 정리
+    if (gameStatus === GameStatus.PLAYING) {
+      setGameStatus(GameStatus.PAUSED)
+      if (controllerRef.current) {
+        controllerRef.current.disable()
+      }
+      if (touchControllerRef.current) {
+        touchControllerRef.current.disable()
+      }
+      if (gameLoopRef.current) {
+        clearTimeout(gameLoopRef.current)
+        gameLoopRef.current = null
+      }
+    } else {
+      setGameStatus(GameStatus.PLAYING)
+      if (controllerRef.current) {
+        controllerRef.current.enable()
+      }
+      if (touchControllerRef.current) {
+        touchControllerRef.current.enable()
+      }
+      lastMoveDownTime.current = Date.now() // 타이머 리셋
+    }
+  }, [gameStatus])
+
+  // 게임 다시 시작
+  const restartGame = useCallback(() => {
+    if (gameLoopRef.current) {
+      clearTimeout(gameLoopRef.current)
+      gameLoopRef.current = null
+    }
+    initGame()
+    setGameStatus(GameStatus.PLAYING)
+    if (controllerRef.current) {
+      controllerRef.current.enable()
+    }
+    if (touchControllerRef.current) {
+      touchControllerRef.current.enable()
+    }
+  }, [initGame])
+
+  // 게임 컨트롤러 설정
   useEffect(() => {
-    controllerRef.current = new GameController(controllerCallbacks)
+    const callbacks = {
+      onMoveLeft: () => movePiece(-1),
+      onMoveRight: () => movePiece(1),
+      onMoveDown: moveDown,
+      onRotate: rotatePiece,
+      onHardDrop: hardDrop,
+      onHold: holdCurrentPiece,
+      onPause: togglePause,
+      onRestart: restartGame,
+    }
+
+    // 키보드 컨트롤러 설정
+    controllerRef.current = new GameController(callbacks)
     controllerRef.current.attach()
+
+    // 시작 화면에서는 컨트롤러 비활성화
+    if (gameStatus === GameStatus.START_SCREEN) {
+      controllerRef.current.disable()
+    }
+
+    // 터치 컨트롤러 설정
+    touchControllerRef.current = new TouchController(callbacks)
+    if (boardRef.current) {
+      touchControllerRef.current.attach(boardRef.current)
+
+      // 시작 화면에서는 터치 컨트롤러 비활성화
+      if (gameStatus === GameStatus.START_SCREEN) {
+        touchControllerRef.current.disable()
+      }
+    }
 
     return () => {
       if (controllerRef.current) {
         controllerRef.current.detach()
-        controllerRef.current = null
+      }
+      if (touchControllerRef.current && boardRef.current) {
+        touchControllerRef.current.detach(boardRef.current)
       }
     }
-  }, [controllerCallbacks])
+  }, [
+    movePiece,
+    moveDown,
+    rotatePiece,
+    hardDrop,
+    holdCurrentPiece,
+    togglePause,
+    restartGame,
+    gameStatus, // 게임 상태가 변경될 때마다 컨트롤러 상태 업데이트
+  ])
 
-  // 게임 상태에 따른 컨트롤러 활성화/비활성화
+  // 게임 루프
   useEffect(() => {
-    if (controllerRef.current) {
-      if (gameStatus === GameStatus.PLAYING) {
-        controllerRef.current.enable()
-      } else {
-        controllerRef.current.disable()
+    if (
+      gameStatus !== GameStatus.PLAYING ||
+      !currentPiece ||
+      gameLoopRef.current
+    )
+      return
+
+    const runGameLoop = () => {
+      const now = Date.now()
+      const speed = getSpeedByLevel(gameStats.level)
+
+      // 일정 시간이 지나면 조각을 아래로 이동
+      if (now - lastMoveDownTime.current > speed) {
+        const moved = moveDown()
+
+        // 이동할 수 없으면 조각을 고정하고 다음 조각 생성
+        if (!moved && currentPiece) {
+          placePiece(currentPiece)
+        }
+
+        lastMoveDownTime.current = now
+      }
+
+      // 다음 프레임 예약
+      gameLoopRef.current = setTimeout(runGameLoop, 16.67) // 약 60fps
+    }
+
+    runGameLoop()
+
+    return () => {
+      if (gameLoopRef.current) {
+        clearTimeout(gameLoopRef.current)
+        gameLoopRef.current = null
+      }
+    }
+  }, [gameStatus, currentPiece, moveDown, placePiece, gameStats.level])
+
+  // 보드 로딩 시 고스트 위치 계산
+  useEffect(() => {
+    if (currentPiece && gameStatus === GameStatus.PLAYING) {
+      setGhostPosition(calculateGhostPosition(board, currentPiece))
+    }
+  }, [currentPiece, board, gameStatus])
+
+  // 게임 상태에 따른 초기화
+  useEffect(() => {
+    // 시작 화면일 때는 빈 보드만 준비
+    if (gameStatus === GameStatus.START_SCREEN) {
+      setBoard(createEmptyBoard())
+    }
+    // 게임 종료 시 이벤트 정리
+    return () => {
+      if (gameLoopRef.current) {
+        clearTimeout(gameLoopRef.current)
       }
     }
   }, [gameStatus])
 
-  // 게임 루프
-  const gameLoop = useCallback(() => {
-    if (gameStatus !== GameStatus.PLAYING || !currentPiece) {
-      console.log('게임 루프 중단:', {
-        gameStatus,
-        currentPiece: !!currentPiece,
-      })
-      return
+  // 게임 상태 페이지 타이틀 설정
+  const pageTitle = useMemo(() => {
+    switch (gameStatus) {
+      case GameStatus.START_SCREEN:
+        return '테트리스 | 시작 화면'
+      case GameStatus.PAUSED:
+        return '테트리스 | 일시정지'
+      case GameStatus.GAME_OVER:
+        return '테트리스 | 게임 오버'
+      default:
+        return '테트리스'
     }
+  }, [gameStatus])
 
-    const now = Date.now()
-    const speed = getSpeedByLevel(gameStats.level)
-    const timeDiff = now - lastMoveDownTime.current
+  // 시작 화면 렌더링
+  const renderStartScreen = () => {
+    return (
+      <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-90 flex flex-col items-center justify-center z-10 p-4">
+        <h2 className="text-3xl font-bold mb-8 text-center text-white">
+          테트리스
+        </h2>
 
-    // 일정 시간마다 자동으로 아래로 이동
-    if (timeDiff > speed) {
-      console.log('게임 루프 실행:', {
-        timeDiff,
-        speed,
-        currentPiece: currentPiece.type,
-        position: currentPiece.position,
-      })
+        <div className="bg-[#222] p-6 rounded-lg mb-8 max-w-[500px] w-full">
+          <h3 className="text-xl font-bold mb-4 text-center text-white">
+            게임 조작 방법
+          </h3>
 
-      const newPosition = {
-        ...currentPiece.position,
-        y: currentPiece.position.y + 1,
-      }
+          {isMobile ? (
+            <div className="text-white mb-6">
+              <div className="mb-4">
+                <h4 className="text-lg font-semibold mb-2">화면 터치 제스처</h4>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>좌우로 스와이프: 블록 좌우 이동</li>
+                  <li>위로 스와이프: 블록 회전</li>
+                  <li>아래로 스와이프: 하드 드롭 (바닥까지 낙하)</li>
+                  <li>한 번 탭: 블록 한 칸 아래로</li>
+                  <li>두 번 탭: 홀드 (블록 저장)</li>
+                </ul>
+              </div>
 
-      if (!isColliding(board, { ...currentPiece, position: newPosition })) {
-        setCurrentPiece({
-          ...currentPiece,
-          position: newPosition,
-        })
-        setGhostPosition(
-          calculateGhostPosition(board, {
-            ...currentPiece,
-            position: newPosition,
-          })
-        )
-      } else {
-        console.log('블록 고정')
-        placePiece(currentPiece)
-      }
+              <div>
+                <h4 className="text-lg font-semibold mb-2">화면 하단 버튼</h4>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>↺: 블록 회전</li>
+                  <li>홀드: 현재 블록 저장</li>
+                  <li>↓↓: 하드 드롭</li>
+                  <li>←/→: 블록 좌우 이동</li>
+                  <li>⏸: 일시정지</li>
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <div className="text-white">
+              <h4 className="text-lg font-semibold mb-2">키보드 조작</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>← →: 블록 좌우 이동</li>
+                  <li>↓: 블록 한 칸 아래로</li>
+                  <li>↑: 블록 회전</li>
+                </ul>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>스페이스: 하드 드롭</li>
+                  <li>Shift: 홀드 (블록 저장)</li>
+                  <li>P: 일시정지</li>
+                  <li>R: 재시작</li>
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
 
-      lastMoveDownTime.current = now
-    }
-  }, [gameStatus, currentPiece, board, gameStats.level, placePiece])
-
-  // 게임 초기화 및 이벤트 리스너 설정
-  useEffect(() => {
-    initGame()
-  }, [initGame])
-
-  // 게임 루프 관리
-  useEffect(() => {
-    let frameId: number
-    const currentGameLoopRef = gameLoopRef.current
-
-    if (gameStatus === GameStatus.PLAYING && currentPiece) {
-      const runGameLoop = () => {
-        gameLoop()
-        frameId = requestAnimationFrame(runGameLoop)
-      }
-
-      frameId = requestAnimationFrame(runGameLoop)
-
-      return () => {
-        cancelAnimationFrame(frameId)
-        if (currentGameLoopRef) {
-          clearTimeout(currentGameLoopRef)
-        }
-      }
-    }
-  }, [gameStatus, currentPiece, gameLoop])
-
-  // 고스트 위치 업데이트 - 필요한 경우에만 실행
-  useEffect(() => {
-    if (currentPiece && gameStatus === GameStatus.PLAYING) {
-      const newGhostPosition = calculateGhostPosition(board, currentPiece)
-      if (newGhostPosition !== ghostPosition) {
-        setGhostPosition(newGhostPosition)
-      }
-    }
-  }, [currentPiece, board, gameStatus, ghostPosition])
-
-  // 플레이어 통계 로드
-  const playerStats = loadGameStats()
+        <button
+          className="px-8 py-4 bg-blue-500 text-white text-xl rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors"
+          onClick={startGame}
+        >
+          게임 시작
+        </button>
+      </div>
+    )
+  }
 
   return (
-    <div className="flex flex-col items-center min-h-screen p-4 bg-gray-800">
+    <div className="min-h-screen bg-black text-white p-4 overflow-hidden">
       <Helmet>
-        <title>테트리스 - 브라우저 아케이드</title>
-        <meta
-          name="description"
-          content="클래식 테트리스 게임을 무료로 즐겨보세요. 최고 점수를 기록하고 친구들과 경쟁해보세요."
-        />
-        <meta
-          name="keywords"
-          content="테트리스, 무료 테트리스, 온라인 테트리스, 브라우저 게임, 퍼즐 게임"
-        />
-
-        {/* Open Graph 메타 태그 */}
-        <meta property="og:title" content="테트리스 - 브라우저 아케이드" />
-        <meta
-          property="og:description"
-          content="클래식 테트리스 게임을 무료로 즐겨보세요. 최고 점수를 기록하고 친구들과 경쟁해보세요."
-        />
-        <meta property="og:type" content="game" />
-        <meta property="og:image" content="/images/tetris-thumbnail.png" />
-
-        {/* Twitter Card 메타 태그 */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="테트리스 - 브라우저 아케이드" />
-        <meta
-          name="twitter:description"
-          content="클래식 테트리스 게임을 무료로 즐겨보세요. 최고 점수를 기록하고 친구들과 경쟁해보세요."
-        />
-        <meta name="twitter:image" content="/images/tetris-thumbnail.png" />
+        <title>{pageTitle}</title>
       </Helmet>
 
-      <header className="flex justify-between items-center w-full max-width-1000 mb-4">
-        <div className="w-120">
-          <Link
-            to="/"
-            className="text-sm text-gray-400 no-underline hover:text-white"
-          >
-            홈으로
-          </Link>
-        </div>
-        <h1 className="text-2xl text-center text-white">테트리스</h1>
-        <div />
+      <header className="mb-4 flex justify-between items-center">
+        <h1 className="text-2xl font-bold">테트리스</h1>
+        <Link
+          to="/"
+          className="px-2 py-1 bg-[#333] text-white rounded hover:bg-[#444]"
+        >
+          홈으로
+        </Link>
       </header>
 
-      <div className="flex justify-center items-start gap-4 w-full max-width-1000">
-        <div className="flex flex-col gap-4">
-          <HoldPiece holdPiece={holdPiece} />
-          <GameInfo
-            gameStats={gameStats}
-            playerStats={playerStats}
-            gameStatus={gameStatus}
-          />
-        </div>
+      <div className="w-full flex flex-col items-center justify-center mx-auto max-w-4xl">
+        {/* 시작 화면 */}
+        {gameStatus === GameStatus.START_SCREEN && renderStartScreen()}
 
-        <div className="relative">
-          <TetrisBoard
-            board={board}
-            currentPiece={currentPiece}
-            ghostPosition={ghostPosition}
-          />
+        {/* 게임 오버 오버레이 */}
+        {gameStatus === GameStatus.GAME_OVER && (
+          <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 flex flex-col items-center justify-center z-10 p-4">
+            <h2 className="text-3xl font-bold mb-4 text-center">게임 오버</h2>
+            <p className="text-xl mb-2">점수: {gameStats.score}</p>
+            <p className="text-xl mb-2">레벨: {gameStats.level}</p>
+            <p className="text-xl mb-2">라인: {gameStats.lines}</p>
+            <button
+              className="mt-4 px-4 py-2 bg-[#333] text-white rounded hover:bg-[#444] active:bg-[#555]"
+              onClick={restartGame}
+            >
+              다시 시작
+            </button>
+          </div>
+        )}
 
-          {gameStatus === GameStatus.GAME_OVER && (
-            <div className="absolute top-0 left-0 w-full h-full bg-black/80 flex flex-col justify-center items-center z-100">
-              <h2 className="text-3xl mb-4 text-red-600">게임 오버</h2>
-              <p className="text-xl mb-8">최종 점수: {gameStats.score}</p>
-              <button
-                className="bg-red-600 text-white border-none py-[10px] px-5 text-xl cursor-pointer mb-4 hover:bg-red-800"
-                onClick={initGame}
-              >
-                다시 시작
-              </button>
+        {/* 일시정지 오버레이 */}
+        {gameStatus === GameStatus.PAUSED && (
+          <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 flex flex-col items-center justify-center z-10 p-4">
+            <h2 className="text-3xl font-bold mb-4 text-center">일시정지</h2>
+            <button
+              className="px-4 py-2 bg-[#333] text-white rounded hover:bg-[#444] active:bg-[#555]"
+              onClick={togglePause}
+            >
+              계속하기
+            </button>
+          </div>
+        )}
+
+        {/* 데스크톱 레이아웃 */}
+        {!isMobile ? (
+          <div className="relative flex flex-row justify-center gap-4">
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-4">
+                <HoldPiece piece={holdPiece} />
+                <NextPiece piece={nextPiece} />
+              </div>
+              <GameInfo gameStats={gameStats} />
+              <GameControls
+                onMove={movePiece}
+                onRotate={rotatePiece}
+                onDrop={hardDrop}
+                onHold={holdCurrentPiece}
+                onPause={togglePause}
+                onRestart={restartGame}
+                gameStatus={gameStatus}
+              />
             </div>
-          )}
 
-          {gameStatus === GameStatus.PAUSED && (
-            <div className="absolute top-0 left-0 w-full h-full bg-black/80 flex flex-col justify-center items-center z-100">
-              <h2 className="text-3xl mb-4 text-red-600">일시 정지</h2>
-              <button
-                className="bg-red-600 text-white border-none py-[10px] px-5 text-xl cursor-pointer mb-4 hover:bg-red-800"
-                onClick={() => setGameStatus(GameStatus.PLAYING)}
-              >
-                계속하기
-              </button>
+            <div ref={boardRef} className="relative">
+              <TetrisBoard
+                board={board}
+                currentPiece={currentPiece}
+                ghostPosition={ghostPosition}
+              />
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          /* 모바일 레이아웃 */
+          <div className="w-full flex flex-col items-center">
+            {/* 홀드 및 다음 조각 영역 */}
+            <div className="flex w-full justify-center space-x-4 mb-2">
+              <HoldPiece piece={holdPiece} />
+              <NextPiece piece={nextPiece} />
+            </div>
 
-        <div className="flex flex-col gap-4">
-          <NextPiece nextPiece={nextPiece} />
-          <GameControls
-            onMove={movePiece}
-            onRotate={rotatePiece}
-            onDrop={hardDrop}
-            onHold={holdCurrentPiece}
-            onPause={() =>
-              setGameStatus((prev) =>
-                prev === GameStatus.PLAYING
-                  ? GameStatus.PAUSED
-                  : GameStatus.PLAYING
-              )
-            }
-            onRestart={initGame}
-            gameStatus={gameStatus}
-          />
-        </div>
+            {/* 테트리스 보드 */}
+            <div ref={boardRef} className="w-full flex justify-center mb-1">
+              <TetrisBoard
+                board={board}
+                currentPiece={currentPiece}
+                ghostPosition={ghostPosition}
+              />
+            </div>
+
+            {/* 모바일 컨트롤러 - 보드 바로 아래 */}
+            <div className="w-full flex justify-center mb-2">
+              <MobileControls
+                onMove={movePiece}
+                onRotate={rotatePiece}
+                onDrop={hardDrop}
+                onHold={holdCurrentPiece}
+                onPause={togglePause}
+                onRestart={restartGame}
+                gameStatus={gameStatus}
+              />
+            </div>
+
+            {/* 게임 정보 - 컨트롤러 아래 */}
+            <div className="w-full flex justify-center mt-2">
+              <GameInfo gameStats={gameStats} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
