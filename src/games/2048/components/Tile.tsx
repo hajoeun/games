@@ -112,21 +112,31 @@ const Tile: React.FC<TileProps> = ({ tile, size, boardRef }) => {
   // 이동 애니메이션을 위한 위치 설정
   useEffect(() => {
     if (!tileRef.current) return
-    const tile = tileRef.current
-    const cellPadding = 5 // 그리드 셀과 동일한 패딩 값
 
-    // 애니메이션 시작 코드
+    // 병합 애니메이션 디버깅 및 강화
     if (mergedFrom) {
       console.log(
         `병합 타일 애니메이션: 값=${value}, 위치=[${position.row}, ${position.col}]`
       )
+      // 타일 병합 시 애니메이션이 확실히 적용되도록 클래스를 다시 추가
+      const tile = tileRef.current
+      tile.classList.remove('tile-merged')
+      // forceReflow trick - 강제로 브라우저가 리플로우하도록 하여 애니메이션 재시작
+      void tile.offsetWidth
+      tile.classList.add('tile-merged')
       return
     }
 
+    // 새 타일 애니메이션 디버깅 및 강화
     if (isNew) {
       console.log(
         `새 타일 애니메이션: 값=${value}, 위치=[${position.row}, ${position.col}]`
       )
+      // 애니메이션 확실히 적용 (필요시)
+      const tile = tileRef.current
+      tile.classList.remove('tile-new')
+      void tile.offsetWidth
+      tile.classList.add('tile-new')
       return
     }
 

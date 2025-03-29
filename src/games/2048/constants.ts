@@ -29,7 +29,7 @@ export const KEY_MAPPING = {
 export const MIN_SWIPE_DISTANCE = 30;
 
 // 애니메이션 지속 시간 (밀리초)
-export const ANIMATION_DURATION = 150;
+export const ANIMATION_DURATION = 300;
 
 // 방향별 이동 픽셀 값 (CSS 변환용)
 export const DIRECTION_TRANSFORMS = {

@@ -180,7 +180,7 @@ const Game2048 = () => {
           ? GameStatus.WON
           : prev.status,
       }))
-    }, 100) // 타일 이동 애니메이션 시간
+    }, ANIMATION_DURATION) // 애니메이션 지속 시간 상수 사용
   }, [])
 
   // 게임 리셋
