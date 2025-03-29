@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { GameState } from './types'
 import GameBoard from './components/GameBoard'
 import GameHeader from './components/GameHeader'
@@ -35,26 +36,80 @@ const Breakout: React.FC = () => {
   }
 
   return (
-    <div className="bg-gradient-to-b from-[#000033] to-[#000022] bg-cover min-h-screen w-full flex justify-center items-center overflow-hidden relative before:content-[''] before:absolute before:w-full before:h-full before:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_1px,transparent_1px)] before:bg-[length:50px_50px] before:z-0">
-      <div
-        className="flex flex-col items-center w-full max-w-[800px] mx-auto p-5 outline-none text-white font-['Press_Start_2P','Courier_New',monospace] relative z-[1]"
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-      >
-        <GameHeader score={score} lives={lives} level={level} />
+    <div
+      className="min-h-screen w-full py-8 px-4"
+      style={{ backgroundColor: '#f0f0f0' }}
+    >
+      <div className="container mx-auto max-w-5xl">
+        <div className="classic-window">
+          <div className="classic-title-bar">
+            <div className="title">벽돌깨기</div>
+          </div>
 
-        <GameBoard
-          onScoreChange={setScore}
-          onLivesChange={setLives}
-          onGameStateChange={setGameState}
-          onLevelChange={setLevel}
-          handleKeyDown={handleKeyDown}
-          gameState={gameState}
-          level={level}
-          score={score}
-          onStartGame={handleStartGame}
-          onRestartGame={handleRestartGame}
-        />
+          <div className="p-4">
+            <div className="flex flex-col items-center">
+              {/* 게임 정보 헤더 */}
+              <div className="flex justify-between w-full max-w-[800px] mb-4">
+                <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
+                  <div className="text-sm text-game-text">점수</div>
+                  <div className="font-bold text-xl text-game-text">
+                    {score}
+                  </div>
+                </div>
+
+                <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
+                  <div className="text-sm text-game-text">레벨</div>
+                  <div className="font-bold text-xl text-game-text">
+                    {level}
+                  </div>
+                </div>
+
+                <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
+                  <div className="text-sm text-game-text">생명</div>
+                  <div className="font-bold text-xl text-game-text">
+                    {lives}
+                  </div>
+                </div>
+              </div>
+
+              {/* 게임 영역 */}
+              <div className="game-area p-0 rounded-md overflow-hidden">
+                <GameBoard
+                  onScoreChange={setScore}
+                  onLivesChange={setLives}
+                  onGameStateChange={setGameState}
+                  onLevelChange={setLevel}
+                  handleKeyDown={handleKeyDown}
+                  gameState={gameState}
+                  level={level}
+                  score={score}
+                  onStartGame={handleStartGame}
+                  onRestartGame={handleRestartGame}
+                />
+              </div>
+
+              {/* 게임 설명 */}
+              <div className="mt-4 text-center max-w-[800px]">
+                <div className="classic-dialog">
+                  <h3 className="text-base font-chicago mb-2">조작 방법</h3>
+                  <p className="text-sm font-monaco mb-1">
+                    ← → 키: 패들 좌우 이동
+                  </p>
+                  <p className="text-sm font-monaco mb-1">
+                    스페이스 바: 게임 시작/공 발사
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 홈으로 이동 버튼 */}
+        <div className="mt-4 text-center">
+          <Link to="/" className="classic-button inline-block">
+            홈으로
+          </Link>
+        </div>
       </div>
     </div>
   )

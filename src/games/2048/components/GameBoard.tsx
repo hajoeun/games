@@ -24,31 +24,20 @@ const GameHeader: React.FC<GameHeaderProps> = ({
   return (
     <div className="flex flex-col space-y-4 mb-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
-          2048
-        </h1>
-        <button
-          onClick={onReset}
-          className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded transition"
-        >
+        <h1 className="text-xl font-chicago text-game-text">2048</h1>
+        <button onClick={onReset} className="game-button">
           새 게임
         </button>
       </div>
 
       <div className="flex justify-between">
-        <div className="bg-gray-200 dark:bg-gray-700 rounded p-2 min-w-24 text-center">
-          <div className="text-sm text-gray-600 dark:text-gray-300">점수</div>
-          <div className="font-bold text-xl text-gray-800 dark:text-gray-100">
-            {score}
-          </div>
+        <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
+          <div className="text-sm text-game-text">점수</div>
+          <div className="font-bold text-xl text-game-text">{score}</div>
         </div>
-        <div className="bg-gray-200 dark:bg-gray-700 rounded p-2 min-w-24 text-center">
-          <div className="text-sm text-gray-600 dark:text-gray-300">
-            최고 점수
-          </div>
-          <div className="font-bold text-xl text-gray-800 dark:text-gray-100">
-            {bestScore}
-          </div>
+        <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
+          <div className="text-sm text-game-text">최고 점수</div>
+          <div className="font-bold text-xl text-game-text">{bestScore}</div>
         </div>
       </div>
     </div>
@@ -64,7 +53,7 @@ interface GameControlsProps {
 const GameControls: React.FC<GameControlsProps> = ({ onMove, disabled }) => {
   return (
     <div className="flex flex-col items-center mt-6">
-      <div className="text-center mb-2 text-gray-600 dark:text-gray-300">
+      <div className="text-center mb-2 text-game-text">
         키보드 화살표 또는 아래 버튼 사용
       </div>
 
@@ -72,7 +61,7 @@ const GameControls: React.FC<GameControlsProps> = ({ onMove, disabled }) => {
         {/* 위쪽 버튼 */}
         <div className="col-span-3 flex justify-center mb-2">
           <button
-            className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
+            className="w-16 h-16 bg-classic-secondary border-2 border-game-text text-game-text font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
             onClick={() => onMove(Direction.UP)}
             disabled={disabled}
             aria-label="위로 이동"
@@ -97,7 +86,7 @@ const GameControls: React.FC<GameControlsProps> = ({ onMove, disabled }) => {
         {/* 왼쪽 버튼 */}
         <div className="flex justify-end">
           <button
-            className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
+            className="w-16 h-16 bg-classic-secondary border-2 border-game-text text-game-text font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
             onClick={() => onMove(Direction.LEFT)}
             disabled={disabled}
             aria-label="왼쪽으로 이동"
@@ -125,7 +114,7 @@ const GameControls: React.FC<GameControlsProps> = ({ onMove, disabled }) => {
         {/* 오른쪽 버튼 */}
         <div className="flex justify-start">
           <button
-            className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
+            className="w-16 h-16 bg-classic-secondary border-2 border-game-text text-game-text font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
             onClick={() => onMove(Direction.RIGHT)}
             disabled={disabled}
             aria-label="오른쪽으로 이동"
@@ -150,7 +139,7 @@ const GameControls: React.FC<GameControlsProps> = ({ onMove, disabled }) => {
         {/* 아래쪽 버튼 */}
         <div className="col-span-3 flex justify-center mt-2">
           <button
-            className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
+            className="w-16 h-16 bg-classic-secondary border-2 border-game-text text-game-text font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
             onClick={() => onMove(Direction.DOWN)}
             disabled={disabled}
             aria-label="아래로 이동"
@@ -193,30 +182,22 @@ const GameOverOverlay: React.FC<GameOverOverlayProps> = ({
   showContinue,
 }) => {
   return (
-    <div className="game-over dark:bg-opacity-80 dark:bg-gray-800">
-      <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-gray-100">
+    <div className="game-over dark:bg-opacity-80 bg-game-board bg-opacity-80">
+      <h2 className="text-2xl font-chicago text-game-text">
         {hasWon ? '축하합니다!' : '게임 오버!'}
       </h2>
-      <p className="text-lg mb-4 text-gray-700 dark:text-gray-300">
+      <p className="text-lg mb-4 text-game-text">
         {hasWon ? '2048 타일에 도달했습니다!' : '더 이상 이동할 수 없습니다.'}
       </p>
-      <div className="text-xl font-bold mb-6 text-gray-800 dark:text-gray-100">
-        점수: {score}
-      </div>
+      <div className="text-xl font-bold mb-6 text-game-text">점수: {score}</div>
 
       <div className="flex flex-col space-y-2">
         {showContinue && (
-          <button
-            onClick={onContinue}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded transition"
-          >
+          <button onClick={onContinue} className="game-button">
             계속하기
           </button>
         )}
-        <button
-          onClick={onReset}
-          className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded transition"
-        >
+        <button onClick={onReset} className="game-button">
           새 게임
         </button>
       </div>
@@ -400,25 +381,20 @@ const GameBoard: React.FC<GameBoardProps> = ({
   return (
     <div className="game-container w-full max-w-md mx-auto flex flex-col items-center">
       <div className="flex justify-between w-full mb-4">
-        <div className="bg-gray-200 dark:bg-gray-700 rounded p-2 min-w-24 text-center">
-          <div className="text-sm text-gray-600 dark:text-gray-300">점수</div>
-          <div className="font-bold text-xl text-gray-800 dark:text-gray-100">
+        <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
+          <div className="text-sm text-game-text">점수</div>
+          <div className="font-bold text-xl text-game-text">
             {gameState.score}
           </div>
         </div>
 
-        <button
-          onClick={onReset}
-          className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded transition"
-        >
+        <button onClick={onReset} className="game-button">
           새 게임
         </button>
 
-        <div className="bg-gray-200 dark:bg-gray-700 rounded p-2 min-w-24 text-center">
-          <div className="text-sm text-gray-600 dark:text-gray-300">
-            최고 점수
-          </div>
-          <div className="font-bold text-xl text-gray-800 dark:text-gray-100">
+        <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
+          <div className="text-sm text-game-text">최고 점수</div>
+          <div className="font-bold text-xl text-game-text">
             {gameState.bestScore}
           </div>
         </div>
@@ -439,20 +415,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
         {renderGridCells()}
 
         {/* 타일 렌더링 */}
-        {gameState.tiles && gameState.tiles.length > 0 ? (
-          gameState.tiles.map((tile) => (
-            <Tile
-              key={tile.id}
-              tile={tile}
-              size={tileSize}
-              boardRef={boardRef}
-            />
-          ))
-        ) : (
-          <div className="text-center absolute inset-0 flex items-center justify-center text-gray-500 dark:text-gray-300">
-            타일 로딩 중...
-          </div>
-        )}
+        {gameState.tiles && gameState.tiles.length > 0
+          ? gameState.tiles.map((tile) => (
+              <Tile
+                key={tile.id}
+                tile={tile}
+                size={tileSize}
+                boardRef={boardRef}
+              />
+            ))
+          : null}
 
         {/* 게임 오버 오버레이 */}
         {gameState.gameOver && (
@@ -466,7 +438,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
         )}
       </div>
 
+      {/* 게임 컨트롤 */}
       <GameControls onMove={handleControlMove} disabled={gameState.gameOver} />
+
+      {/* 설명 */}
+      <p className="text-sm text-game-text mt-4 text-center">
+        2048 타일에 도달하면 승리! 방향키나 스와이프로 같은 숫자 타일을
+        합치세요.
+      </p>
     </div>
   )
 }

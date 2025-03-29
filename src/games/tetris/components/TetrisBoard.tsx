@@ -56,7 +56,7 @@ const TetrisBoard: React.FC<TetrisBoardProps> = ({
 
   return (
     <div
-      className="flex flex-col border-2 border-[#333] bg-black p-0.5 shadow-[0_0_20px_rgba(0,0,0,0.4)] touch-none mx-auto"
+      className="flex flex-col border-2 border-classic-secondary bg-game-board p-0.5 touch-none mx-auto"
       data-testid="tetris-board"
     >
       {board.map((row, y) => (

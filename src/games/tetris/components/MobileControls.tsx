@@ -2,23 +2,23 @@ import React from 'react'
 import { GameStatus } from '../types'
 
 interface MobileControlsProps {
-  onMove: (direction: number) => void
+  onMoveLeft: () => void
+  onMoveRight: () => void
   onRotate: () => void
-  onDrop: () => void
+  onSoftDrop: () => boolean
+  onHardDrop: () => void
   onHold: () => void
-  onPause: () => void
-  onRestart: () => void
-  gameStatus?: GameStatus
+  disabled: boolean
 }
 
 const MobileControls: React.FC<MobileControlsProps> = ({
-  onMove,
+  onMoveLeft,
+  onMoveRight,
   onRotate,
-  onDrop,
+  onSoftDrop,
+  onHardDrop,
   onHold,
-  onPause,
-  onRestart,
-  gameStatus = GameStatus.PLAYING,
+  disabled = false,
 }) => {
   const showHelp = () => {
     // 도움말 모달 표시 (간단한 구현)
@@ -33,34 +33,37 @@ const MobileControls: React.FC<MobileControlsProps> = ({
   }
 
   return (
-    <div className="w-full max-w-[320px] flex flex-col items-center">
+    <div className="w-full flex flex-col items-center">
       {/* 모바일용 버튼 컨트롤 */}
       <div className="w-full grid grid-cols-3 gap-2">
         <div className="col-span-3 grid grid-cols-3 gap-2">
           <button
-            className="col-span-1 p-4 bg-[#333] text-white border border-[#444] rounded-lg active:bg-[#555] text-3xl touch-manipulation flex items-center justify-center"
+            className="game-button"
             onTouchStart={(e) => {
               e.preventDefault()
-              onRotate()
+              if (!disabled) onRotate()
             }}
+            disabled={disabled}
           >
             ↺
           </button>
           <button
-            className="col-span-1 p-4 bg-[#333] text-white border border-[#444] rounded-lg active:bg-[#555] text-xl touch-manipulation flex items-center justify-center"
+            className="game-button"
             onTouchStart={(e) => {
               e.preventDefault()
-              onHold()
+              if (!disabled) onHold()
             }}
+            disabled={disabled}
           >
             홀드
           </button>
           <button
-            className="col-span-1 p-4 bg-[#333] text-white border border-[#444] rounded-lg active:bg-[#555] text-3xl touch-manipulation flex items-center justify-center"
+            className="game-button"
             onTouchStart={(e) => {
               e.preventDefault()
-              onDrop()
+              if (!disabled) onHardDrop()
             }}
+            disabled={disabled}
           >
             ↓↓
           </button>
@@ -68,41 +71,32 @@ const MobileControls: React.FC<MobileControlsProps> = ({
 
         <div className="col-span-3 grid grid-cols-3 gap-2 mt-2">
           <button
-            className="col-span-1 p-4 bg-[#333] text-white border border-[#444] rounded-lg active:bg-[#555] text-3xl touch-manipulation flex items-center justify-center"
+            className="game-button"
             onTouchStart={(e) => {
               e.preventDefault()
-              onMove(-1)
+              if (!disabled) onMoveLeft()
             }}
+            disabled={disabled}
           >
             ←
           </button>
-          {gameStatus === GameStatus.GAME_OVER ? (
-            <button
-              className="col-span-1 p-4 bg-[#e74c3c] text-white border border-[#c0392b] rounded-lg active:bg-[#c0392b] text-xl touch-manipulation flex items-center justify-center"
-              onTouchStart={(e) => {
-                e.preventDefault()
-                onRestart()
-              }}
-            >
-              다시 시작
-            </button>
-          ) : (
-            <button
-              className="col-span-1 p-4 bg-[#333] text-white border border-[#444] rounded-lg active:bg-[#555] text-2xl touch-manipulation flex items-center justify-center"
-              onTouchStart={(e) => {
-                e.preventDefault()
-                onPause()
-              }}
-            >
-              ⏸
-            </button>
-          )}
           <button
-            className="col-span-1 p-4 bg-[#333] text-white border border-[#444] rounded-lg active:bg-[#555] text-3xl touch-manipulation flex items-center justify-center"
+            className="game-button"
             onTouchStart={(e) => {
               e.preventDefault()
-              onMove(1)
+              if (!disabled) onSoftDrop()
             }}
+            disabled={disabled}
+          >
+            ↓
+          </button>
+          <button
+            className="game-button"
+            onTouchStart={(e) => {
+              e.preventDefault()
+              if (!disabled) onMoveRight()
+            }}
+            disabled={disabled}
           >
             →
           </button>
@@ -111,7 +105,10 @@ const MobileControls: React.FC<MobileControlsProps> = ({
 
       {/* 조작 도움말 버튼 */}
       <div className="w-full mt-2 flex justify-center">
-        <button className="text-xs text-[#aaa] underline" onClick={showHelp}>
+        <button
+          className="text-xs font-monaco text-game-text underline"
+          onClick={showHelp}
+        >
           조작 방법 보기
         </button>
       </div>

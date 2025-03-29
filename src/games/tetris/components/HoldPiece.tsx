@@ -4,17 +4,15 @@ import { TETROMINO_COLORS } from '../constants'
 
 interface HoldPieceProps {
   piece: Tetromino | null
+  hasUsed?: boolean
 }
 
-const HoldPiece: React.FC<HoldPieceProps> = ({ piece }) => {
+const HoldPiece: React.FC<HoldPieceProps> = ({ piece, hasUsed = false }) => {
   return (
-    <div className="w-[150px] md:w-[130px] sm:w-[110px] bg-[#1a1a1a] border-2 border-[#333] p-[10px] sm:p-[5px] flex flex-col items-center">
-      <h3 className="m-0 mb-[10px] sm:mb-[5px] text-white text-[1.2rem] sm:text-[1rem]">
-        홀드
-      </h3>
-      <div className="flex flex-col items-center justify-center h-[100px] sm:h-[80px]">
-        {piece ? (
-          piece.shape.map((row, y) => (
+    <div className="flex flex-col items-center justify-center w-full min-h-[120px]">
+      {piece ? (
+        <div className={`${hasUsed ? 'opacity-50' : ''}`}>
+          {piece.shape.map((row, y) => (
             <div className="flex" key={y}>
               {row.map((cell, x) => (
                 <div
@@ -27,16 +25,13 @@ const HoldPiece: React.FC<HoldPieceProps> = ({ piece }) => {
                 />
               ))}
             </div>
-          ))
-        ) : (
-          <div
-            className="text-[#666] text-[1rem] sm:text-[0.8rem]"
-            data-testid="hold-empty"
-          >
-            비어 있음
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-game-text text-center" data-testid="hold-empty">
+          비어 있음
+        </div>
+      )}
     </div>
   )
 }

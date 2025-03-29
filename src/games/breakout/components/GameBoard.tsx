@@ -77,36 +77,30 @@ const GameBoard: React.FC<GameBoardProps> = ({
   }
 
   return (
-    <div className="relative w-[800px] h-[600px] rounded-[8px] overflow-hidden shadow-[0_0_30px_rgba(0,100,255,0.5)]">
+    <div className="relative w-[800px] h-[600px] overflow-hidden bg-game-board">
       <canvas
         ref={canvasRef}
         width={800}
         height={600}
         tabIndex={0}
         onKeyDown={handleLocalKeyDown}
-        className="block bg-[#000033]"
+        className="block"
       />
 
       {gameState === GameState.START && (
-        <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-[rgba(0,0,40,0.8)] text-white z-10 p-5 text-center">
-          <h1
-            className="text-[3rem] mb-[40px] text-[#00ffff] tracking-[3px]"
-            style={{ textShadow: '0 0 15px #00aaff, 0 0 25px #0088ff' }}
-          >
-            BREAKOUT
+        <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center text-center bg-game-board bg-opacity-90 text-game-text z-10 p-5">
+          <h1 className="text-3xl mb-8 text-game-highlight font-chicago">
+            벽돌깨기
           </h1>
-          <p className="text-[1.2rem] mb-[30px] leading-[1.8]">
+          <p className="text-xl mb-6 font-monaco">
             시작하려면 스페이스 바를 누르거나
             <br />
             아래 버튼을 클릭하세요
           </p>
-          <button
-            onClick={handleLocalStartGame}
-            className="py-[10px] px-[20px] text-[1.2rem] bg-[#3355ff] text-white border-none rounded-[5px] cursor-pointer mb-[20px] transition-all hover:bg-[#4466ff] hover:shadow-[0_0_15px_rgba(0,100,255,0.8)]"
-          >
+          <button onClick={handleLocalStartGame} className="game-button mb-4">
             게임 시작
           </button>
-          <div className="text-[1rem] mt-[20px]">
+          <div className="text-base mt-4 font-monaco">
             <p>← → 키: 패들 좌우 이동</p>
             <p>스페이스 바: 게임 시작/공 발사</p>
           </div>
@@ -114,44 +108,32 @@ const GameBoard: React.FC<GameBoardProps> = ({
       )}
 
       {gameState === GameState.GAME_OVER && (
-        <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-[rgba(0,0,40,0.8)] text-white z-10 p-5 text-center">
-          <h2
-            className="text-[3rem] mb-[30px] text-[#ff3333] tracking-[3px]"
-            style={{ textShadow: '0 0 15px #ff0000, 0 0 25px #aa0000' }}
-          >
+        <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center text-center bg-game-board bg-opacity-90 text-game-text z-10 p-5">
+          <h2 className="text-3xl mb-6 text-game-warning font-chicago">
             GAME OVER
           </h2>
-          <p className="text-[1.5rem] mb-[30px]">
+          <p className="text-xl mb-6 font-monaco">
             최종 점수: {score.toString().padStart(6, '0')}
           </p>
-          <button
-            onClick={handleLocalRestartGame}
-            className="py-[10px] px-[20px] text-[1.2rem] bg-[#3355ff] text-white border-none rounded-[5px] cursor-pointer mb-[20px] transition-all hover:bg-[#4466ff] hover:shadow-[0_0_15px_rgba(0,100,255,0.8)]"
-          >
+          <button onClick={handleLocalRestartGame} className="game-button">
             다시 시작
           </button>
         </div>
       )}
 
       {gameState === GameState.LEVEL_CLEAR && (
-        <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-[rgba(0,0,40,0.8)] text-white z-10 p-5 text-center">
-          <h2
-            className="text-[2.5rem] mb-[30px] text-[#33ff33] tracking-[2px]"
-            style={{ textShadow: '0 0 15px #00ff00, 0 0 25px #00aa00' }}
-          >
+        <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center text-center bg-game-board bg-opacity-90 text-game-text z-10 p-5">
+          <h2 className="text-3xl mb-6 text-game-highlight font-chicago">
             LEVEL {level} CLEAR!
           </h2>
-          <p className="text-[1.2rem] mb-[30px] leading-[1.8]">
+          <p className="text-xl mb-6 font-monaco">
             다음 레벨을 시작하려면
             <br />
             스페이스 바를 누르거나
             <br />
             아래 버튼을 클릭하세요
           </p>
-          <button
-            onClick={handleLocalStartGame}
-            className="py-[10px] px-[20px] text-[1.2rem] bg-[#3355ff] text-white border-none rounded-[5px] cursor-pointer mb-[20px] transition-all hover:bg-[#4466ff] hover:shadow-[0_0_15px_rgba(0,100,255,0.8)]"
-          >
+          <button onClick={handleLocalStartGame} className="game-button">
             다음 레벨
           </button>
         </div>

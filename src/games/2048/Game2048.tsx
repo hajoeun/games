@@ -208,55 +208,41 @@ const Game2048 = () => {
 
   return (
     <div
-      className={`game-2048-container min-h-screen bg-gray-100 dark:bg-gray-800 py-8 px-4`}
+      className="min-h-screen w-full py-8 px-4"
+      style={{
+        backgroundColor: isDarkMode ? 'var(--dark-bg)' : 'var(--light-bg)',
+      }}
     >
       <div className="container mx-auto max-w-lg">
-        <div className="flex justify-end mb-4">
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 transition-colors duration-300"
-            aria-label={isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환'}
-          >
-            {isDarkMode ? (
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                />
-              </svg>
-            )}
-          </button>
-        </div>
+        <div className="classic-window">
+          <div className="classic-title-bar">
+            <div className="title">2048 게임</div>
+          </div>
 
-        <GameBoard
-          gameState={gameState}
-          onMove={handleMove}
-          onReset={handleReset}
-          onContinue={handleContinue}
-        />
+          <div className="p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-xl font-chicago">2048</h1>
+              <button
+                onClick={toggleDarkMode}
+                className="classic-button"
+                aria-label={
+                  isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환'
+                }
+              >
+                {isDarkMode ? '라이트 모드' : '다크 모드'}
+              </button>
+            </div>
+
+            <div className="game-area">
+              <GameBoard
+                gameState={gameState}
+                onMove={handleMove}
+                onReset={handleReset}
+                onContinue={handleContinue}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

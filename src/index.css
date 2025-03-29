@@ -2,22 +2,114 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 기존 기본 스타일 유지 */
+/* 클래식 맥 OS 및 게임 스타일을 위한 기본 설정 */
 @layer base {
+  /* 클래식 맥 OS 폰트 */
+  @font-face {
+    font-family: 'Chicago';
+    src: url('/fonts/ChicagoFLF.woff2') format('woff2'),
+         url('/fonts/ChicagoFLF.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'Monaco';
+    src: url('/fonts/monaco.woff2') format('woff2'),
+         url('/fonts/monaco.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'Chicago_12';
+    src: url('/fonts/ChiKareGo2.woff2') format('woff2'),
+         url('/fonts/ChiKareGo2.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'Geneva_9';
+    src: url('/fonts/FindersKeepers.woff2') format('woff2'),
+         url('/fonts/FindersKeepers.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* 픽셀 게임 폰트 */
+  @font-face {
+    font-family: 'Press Start 2P';
+    src: url('/fonts/PressStart2P-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    /* 클래식 맥 OS 스타일 변수 */
+    --box-shadow: 2px 2px;
+    --element-spacing: 8px;
+    --grouped-element-spacing: 6px;
+    
+    /* 기본 색상 */
+    --color-primary: #FFFFFF;     /* 기본 배경색 */
+    --color-secondary: #000000;   /* 텍스트 및 테두리 */
+    --color-disabled: #B6B7B8;    /* 비활성화 요소 */
+    --color-tertiary: #A5A5A5;    /* 보조 색상 */
+    
+    /* 게임 영역 색상 */
+    --game-board: #1E1E2F;        /* 게임 보드 */
+    --game-highlight: #FFFF33;    /* 강조 요소 */
+    --game-primary-btn: #FF0066;  /* 주요 게임 버튼 */
+    --game-text: #FFFFFF;         /* 게임 텍스트 */
+    --game-warning: #FF3300;      /* 경고/에러 */
+  }
+
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
+    font-family: 'Chicago', 'Chicago_12', -apple-system, sans-serif;
+    background: linear-gradient(90deg, var(--color-primary) 21px, transparent 1%) center, 
+                linear-gradient(var(--color-primary) 21px, transparent 1%) center, 
+                var(--color-secondary);
+    background-size: 22px 22px;
+    background-attachment: fixed;
+    color: var(--color-secondary);
+    -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #121212;
-    color: white;
+    overflow-x: hidden;
+  }
+
+  /* 스크롤바 스타일 */
+  ::-webkit-scrollbar {
+    width: 22px;
+    background-color: var(--color-primary);
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: linear-gradient(45deg, var(--color-secondary) 25%, transparent 25%, transparent 75%, var(--color-secondary) 75%, var(--color-secondary)), 
+                linear-gradient(45deg, var(--color-secondary) 25%, transparent 25%, transparent 75%, var(--color-secondary) 75%, var(--color-secondary));
+    background-color: var(--color-primary);
+    background-size: 4px 4px;
+    background-position: 0 0, 2px 2px;
+    width: 10px;
+    border-left: 3px solid var(--color-secondary);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    width: 20px;
+    box-sizing: content-box;
+    background-color: var(--color-primary);
+    border: 2px solid var(--color-secondary);
+    border-right: none;
   }
 
   code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-      monospace;
+    font-family: 'Monaco', monospace;
   }
 
   * {
@@ -27,9 +119,135 @@
   a {
     text-decoration: none;
     color: inherit;
+    transition: all 0.2s ease;
   }
 
   button {
     cursor: pointer;
+    font-family: 'Chicago', 'Chicago_12', sans-serif;
+    padding: 0.5rem 1rem;
+    background-color: var(--color-primary);
+    border: 1.5px solid var(--color-secondary);
+    color: var(--color-secondary);
+    transition: all 0.2s ease;
+  }
+
+  button:focus, button:hover {
+    outline: none;
+  }
+  
+  button:active {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+  }
+
+  /* 제목 스타일 */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Chicago', 'Chicago_12', sans-serif;
+    font-weight: normal;
+  }
+  
+  /* 입력 필드 스타일 */
+  input {
+    border: 1.5px solid var(--color-secondary);
+    font-family: 'Monaco', monospace;
+    padding-left: 5px;
+  }
+  
+  input:focus {
+    outline: none;
+    background: var(--color-secondary);
+    color: var(--color-primary);
+  }
+}
+
+/* 클래식 맥 OS 스타일 컴포넌트 */
+@layer components {
+  /* 창 스타일 */
+  .classic-window {
+    @apply bg-classic-primary border-classic-secondary border-2 flex flex-col overflow-hidden min-w-[320px];
+  }
+  
+  /* 제목 표시줄 */
+  .classic-title-bar {
+    @apply flex items-center h-6 my-0.5 px-0.5 py-0.5 bg-title-bar-pattern bg-title-bar bg-clip-content;
+  }
+  
+  .classic-title-bar .title {
+    @apply px-2 mx-auto text-2xl font-bold leading-none text-center bg-classic-primary cursor-default font-chicago;
+  }
+  
+  /* 버튼 스타일 */
+  .classic-button {
+    @apply min-h-[20px] min-w-[59px] p-0 px-5 text-center bg-classic-primary border-solid border-[5.5px] text-classic-secondary text-center no-underline text-base font-chicago-12 cursor-pointer;
+    border-image: url("/icons/button.svg") 30 stretch;
+  }
+  
+  .classic-button:active {
+    @apply bg-classic-secondary text-classic-primary rounded-md;
+  }
+  
+  .classic-button-default {
+    @apply min-h-[20px] min-w-[59px] p-0 px-5 text-center bg-classic-primary border-solid border-[5.5px] text-classic-secondary text-center no-underline text-base font-chicago-12 cursor-pointer;
+    border-image: url("/icons/button-default.svg") 60 stretch;
+  }
+  
+  .classic-button-default:active {
+    @apply rounded-xl bg-classic-secondary text-classic-primary;
+  }
+  
+  /* 대화상자 스타일 */
+  .classic-dialog {
+    @apply border-2 p-2.5 shadow-[var(--box-shadow)] bg-classic-primary;
+  }
+  
+  /* 메뉴바 스타일 */
+  .classic-menu-bar {
+    @apply flex bg-classic-primary;
+  }
+  
+  .classic-menu-bar > .menu-item {
+    @apply relative p-1.5 font-chicago-12 text-base cursor-pointer;
+  }
+  
+  .classic-menu-bar > .menu-item:hover {
+    @apply bg-classic-secondary text-classic-primary outline-none;
+  }
+
+  /* 게임 영역 컴포넌트 - 픽셀 아트 스타일 유지 */
+  .game-area {
+    @apply bg-game-board text-game-text rounded-md p-4;
+  }
+  
+  .game-title {
+    @apply font-pixel text-xl uppercase tracking-wider text-game-highlight;
+  }
+  
+  .game-button {
+    @apply font-pixel bg-game-primary-btn text-white border-2 border-white py-2 px-4 uppercase tracking-wider hover:scale-105 transition-transform;
+  }
+}
+
+/* 유틸리티 클래스 */
+@layer utilities {
+  /* 픽셀 아트 효과 */
+  .pixel-borders {
+    border-style: solid;
+    border-width: 4px;
+    border-image: url('/images/pixel-border.png') 4 stretch;
+    image-rendering: pixelated;
+  }
+  
+  .retro-shadow {
+    box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.8);
+  }
+  
+  .neon-text {
+    text-shadow: 0 0 5px var(--game-highlight), 0 0 10px var(--game-highlight);
+  }
+  
+  /* 클래식 맥 OS 유틸리티 */
+  .classic-shadow {
+    box-shadow: var(--box-shadow);
   }
 } 

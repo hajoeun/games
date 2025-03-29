@@ -35,50 +35,64 @@ const games: GameInfo[] = [
 
 const Home: React.FC = () => {
   return (
-    <div className="bg-gradient-to-b from-[#000033] to-[#000022] bg-cover min-h-screen w-full py-10 px-5 overflow-hidden relative before:content-[''] before:absolute before:w-full before:h-full before:top-0 before:left-0 before:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_1px,transparent_1px)] before:bg-[length:50px_50px] before:z-0">
-      <div className="max-w-[1200px] mx-auto relative z-[1]">
-        <header className="text-center mb-[50px] p-5 bg-[rgba(20,20,40,0.7)] rounded-[10px] border-2 border-[#444488] shadow-[0_0_20px_rgba(0,100,255,0.3)]">
-          <h1
-            className="text-[3rem] mb-[10px] text-white tracking-[2px] font-['Press_Start_2P','Courier_New',monospace]"
-            style={{ textShadow: '0 0 15px #5555ff, 0 0 25px #5555ff' }}
-          >
-            클래식 게임 아케이드
-          </h1>
-          <p
-            className="text-[1.2rem] text-[#aaaaff] font-['Press_Start_2P','Courier_New',monospace]"
-            style={{ textShadow: '0 0 8px #3333cc' }}
-          >
-            리액트로 구현한 클래식 게임 모음
-          </p>
-        </header>
+    <div className="min-h-screen w-full py-8 px-5 overflow-hidden relative">
+      <div className="max-w-[1200px] mx-auto relative">
+        {/* 클래식 메뉴바 */}
+        <div className="classic-menu-bar mb-4">
+          <div className="menu-item">🍎</div>
+          <div className="menu-item">파일</div>
+          <div className="menu-item">편집</div>
+          <div className="menu-item">보기</div>
+          <div className="menu-item">특별</div>
+          <div className="menu-item">도움말</div>
+        </div>
 
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-[30px]">
+        {/* 메인 창 */}
+        <div className="classic-window mb-8">
+          <div className="classic-title-bar">
+            <div className="title">클래식 게임 아케이드</div>
+          </div>
+          <div className="p-4 text-center">
+            <h1 className="text-2xl mb-2 font-chicago">클래식 게임 아케이드</h1>
+            <p className="text-base font-geneva-9 mb-4">
+              리액트로 구현한 클래식 게임 모음
+            </p>
+          </div>
+        </div>
+
+        {/* 게임 목록 */}
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {games.map((game) => (
-            <div
-              key={game.id}
-              className="rounded-[10px] overflow-hidden bg-[rgba(20,20,40,0.7)] border-2 border-[#444488] shadow-[0_10px_20px_rgba(0,0,0,0.3),0_0_15px_rgba(0,100,255,0.3)] transition-[transform_0.3s,box-shadow_0.3s] hover:translate-y-[-10px] hover:scale-[1.02] hover:shadow-[0_15px_30px_rgba(0,0,0,0.4),0_0_20px_rgba(0,150,255,0.5)]"
-            >
-              <Link to={game.path} className="block">
-                <div className="h-[200px] bg-[#000022] overflow-hidden relative after:content-[''] after:absolute after:top-0 after:left-0 after:right-0 after:h-[30%] after:bg-gradient-to-b after:from-[rgba(0,0,40,0.6)] after:to-transparent after:z-[1]">
-                  <img
-                    src={game.imageUrl}
-                    alt={`${game.title} 게임 이미지`}
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.05]"
-                  />
+            <Link key={game.id} to={game.path} className="block">
+              <div className="classic-window h-full">
+                <div className="classic-title-bar">
+                  <div className="title">{game.title}</div>
                 </div>
-                <h2
-                  className="text-[1.5rem] my-[15px] mx-[15px] text-center text-white font-['Press_Start_2P','Courier_New',monospace]"
-                  style={{ textShadow: '0 0 8px #5555ff' }}
-                >
-                  {game.title}
-                </h2>
-                <p className="text-[1rem] text-[#aaaaff] my-0 mx-[15px] mb-[15px] text-center leading-[1.5]">
-                  {game.description}
-                </p>
-              </Link>
-            </div>
+                <div className="p-3">
+                  <div className="bg-classic-secondary p-0.5 mb-3">
+                    <img
+                      src={game.imageUrl}
+                      alt={`${game.title} 게임 이미지`}
+                      className="w-full h-40 object-cover"
+                    />
+                  </div>
+                  <p className="font-monaco text-sm mb-3 min-h-[3em]">
+                    {game.description}
+                  </p>
+                  <div className="text-center">
+                    <button className="classic-button-default">
+                      플레이하기
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Link>
           ))}
         </div>
+
+        <footer className="mt-8 text-center text-classic-secondary text-xs font-monaco">
+          <p>&copy; 2023 클래식 게임 아케이드. 모든 권리 보유.</p>
+        </footer>
       </div>
     </div>
   )

@@ -528,187 +528,210 @@ const Tetris: React.FC = () => {
     }
   }, [gameStatus])
 
-  // 시작 화면 렌더링
-  const renderStartScreen = () => {
-    return (
-      <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-90 flex flex-col items-center justify-center z-10 p-4">
-        <h2 className="text-3xl font-bold mb-8 text-center text-white">
-          테트리스
-        </h2>
-
-        <div className="bg-[#222] p-6 rounded-lg mb-8 max-w-[500px] w-full">
-          <h3 className="text-xl font-bold mb-4 text-center text-white">
-            게임 조작 방법
-          </h3>
-
-          {isMobile ? (
-            <div className="text-white mb-6">
-              <div className="mb-4">
-                <h4 className="text-lg font-semibold mb-2">화면 터치 제스처</h4>
-                <ul className="list-disc pl-6 space-y-1">
-                  <li>좌우로 스와이프: 블록 좌우 이동</li>
-                  <li>위로 스와이프: 블록 회전</li>
-                  <li>아래로 스와이프: 하드 드롭 (바닥까지 낙하)</li>
-                  <li>한 번 탭: 블록 한 칸 아래로</li>
-                  <li>두 번 탭: 홀드 (블록 저장)</li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="text-lg font-semibold mb-2">화면 하단 버튼</h4>
-                <ul className="list-disc pl-6 space-y-1">
-                  <li>↺: 블록 회전</li>
-                  <li>홀드: 현재 블록 저장</li>
-                  <li>↓↓: 하드 드롭</li>
-                  <li>←/→: 블록 좌우 이동</li>
-                  <li>⏸: 일시정지</li>
-                </ul>
-              </div>
-            </div>
-          ) : (
-            <div className="text-white">
-              <h4 className="text-lg font-semibold mb-2">키보드 조작</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <ul className="list-disc pl-6 space-y-1">
-                  <li>← →: 블록 좌우 이동</li>
-                  <li>↓: 블록 한 칸 아래로</li>
-                  <li>↑: 블록 회전</li>
-                </ul>
-                <ul className="list-disc pl-6 space-y-1">
-                  <li>스페이스: 하드 드롭</li>
-                  <li>Shift: 홀드 (블록 저장)</li>
-                  <li>P: 일시정지</li>
-                  <li>R: 재시작</li>
-                </ul>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <button
-          className="px-8 py-4 bg-blue-500 text-white text-xl rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors"
-          onClick={startGame}
-        >
-          게임 시작
-        </button>
-      </div>
-    )
+  // getHighScore 함수 추가
+  const getHighScore = () => {
+    try {
+      const stats = loadGameStats()
+      return stats ? stats.highScore : 0
+    } catch (error) {
+      console.error('Failed to get high score:', error)
+      return 0
+    }
   }
 
+  // handleHold 함수 수정 (holdCurrentPiece 이름 변경)
+  const handleHold = useCallback(() => {
+    holdCurrentPiece()
+  }, [holdCurrentPiece])
+
+  // 게임 렌더링
   return (
-    <div className="min-h-screen bg-black text-white p-4 overflow-hidden">
+    <div className="min-h-screen w-full py-8 px-4">
       <Helmet>
-        <title>{pageTitle}</title>
+        <title>테트리스 - 클래식 게임 아케이드</title>
+        <meta
+          name="description"
+          content="클래식 테트리스 게임입니다. 블록을 쌓아 줄을 완성하세요!"
+        />
       </Helmet>
 
-      <header className="mb-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">테트리스</h1>
-        <Link
-          to="/"
-          className="px-2 py-1 bg-[#333] text-white rounded hover:bg-[#444]"
-        >
-          홈으로
-        </Link>
-      </header>
-
-      <div className="w-full flex flex-col items-center justify-center mx-auto max-w-4xl">
-        {/* 시작 화면 */}
-        {gameStatus === GameStatus.START_SCREEN && renderStartScreen()}
-
-        {/* 게임 오버 오버레이 */}
-        {gameStatus === GameStatus.GAME_OVER && (
-          <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 flex flex-col items-center justify-center z-10 p-4">
-            <h2 className="text-3xl font-bold mb-4 text-center">게임 오버</h2>
-            <p className="text-xl mb-2">점수: {gameStats.score}</p>
-            <p className="text-xl mb-2">레벨: {gameStats.level}</p>
-            <p className="text-xl mb-2">라인: {gameStats.lines}</p>
-            <button
-              className="mt-4 px-4 py-2 bg-[#333] text-white rounded hover:bg-[#444] active:bg-[#555]"
-              onClick={restartGame}
-            >
-              다시 시작
-            </button>
+      <div className="container mx-auto max-w-5xl">
+        <div className="classic-window">
+          <div className="classic-title-bar">
+            <div className="title">테트리스</div>
           </div>
-        )}
 
-        {/* 일시정지 오버레이 */}
-        {gameStatus === GameStatus.PAUSED && (
-          <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 flex flex-col items-center justify-center z-10 p-4">
-            <h2 className="text-3xl font-bold mb-4 text-center">일시정지</h2>
-            <button
-              className="px-4 py-2 bg-[#333] text-white rounded hover:bg-[#444] active:bg-[#555]"
-              onClick={togglePause}
-            >
-              계속하기
-            </button>
+          <div className="p-4">
+            <div className="flex flex-wrap justify-center gap-4">
+              {/* 게임 시작 화면 */}
+              {gameStatus === GameStatus.START_SCREEN && (
+                <div className="game-area w-full max-w-md p-6 text-center">
+                  <h1 className="text-2xl font-chicago mb-4 text-game-highlight">
+                    테트리스
+                  </h1>
+                  <p className="text-game-text mb-6">
+                    방향키로 블록을 움직이고, 스페이스바로 빠르게 내립니다.
+                  </p>
+                  <div className="mt-6">
+                    <button onClick={startGame} className="game-button">
+                      게임 시작
+                    </button>
+                  </div>
+                  <div className="mt-4 text-sm text-game-text">
+                    <p>
+                      레벨: {gameStats.level} | 최고 점수: {getHighScore()}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* 게임 진행/일시정지/게임오버 상태 */}
+              {gameStatus !== GameStatus.START_SCREEN && (
+                <>
+                  {/* 게임 보드 영역 */}
+                  <div className="game-area p-4 min-w-[300px]">
+                    <div className="flex justify-between items-center mb-2">
+                      <h2 className="text-lg font-chicago text-game-highlight">
+                        테트리스
+                      </h2>
+                      <button
+                        onClick={togglePause}
+                        className="classic-button"
+                        aria-label={
+                          gameStatus === GameStatus.PAUSED
+                            ? '게임 재개'
+                            : '게임 일시정지'
+                        }
+                      >
+                        {gameStatus === GameStatus.PAUSED ? '재개' : '일시정지'}
+                      </button>
+                    </div>
+
+                    <div className="flex justify-center" ref={boardRef}>
+                      <TetrisBoard
+                        board={board}
+                        currentPiece={currentPiece}
+                        ghostPosition={ghostPosition}
+                      />
+                    </div>
+
+                    {/* 모바일 컨트롤 (모바일에서만 표시) */}
+                    {isMobile && (
+                      <div className="mt-4">
+                        <MobileControls
+                          onMoveLeft={() => movePiece(-1)}
+                          onMoveRight={() => movePiece(1)}
+                          onRotate={rotatePiece}
+                          onSoftDrop={moveDown}
+                          onHardDrop={hardDrop}
+                          onHold={handleHold}
+                          disabled={gameStatus !== GameStatus.PLAYING}
+                        />
+                      </div>
+                    )}
+
+                    {/* 게임 오버/일시정지 오버레이 */}
+                    {(gameStatus === GameStatus.GAME_OVER ||
+                      gameStatus === GameStatus.PAUSED) && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.7)] z-10">
+                        <div className="classic-dialog p-6 text-center w-[80%] max-w-[400px]">
+                          <h2 className="text-xl font-chicago mb-4">
+                            {gameStatus === GameStatus.PAUSED
+                              ? '일시 정지'
+                              : '게임 오버'}
+                          </h2>
+                          <p className="mb-6">
+                            {gameStatus === GameStatus.PAUSED
+                              ? '게임이 일시 정지되었습니다.'
+                              : `점수: ${gameStats.score} | 레벨: ${gameStats.level}`}
+                          </p>
+
+                          {gameStatus === GameStatus.PAUSED ? (
+                            <button
+                              onClick={togglePause}
+                              className="classic-button-default"
+                            >
+                              계속하기
+                            </button>
+                          ) : (
+                            <button
+                              onClick={restartGame}
+                              className="classic-button-default"
+                            >
+                              다시 시작
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 게임 정보 패널 */}
+                  <div className="classic-window min-w-[200px]">
+                    <div className="classic-title-bar">
+                      <div className="title">정보</div>
+                    </div>
+                    <div className="p-3">
+                      <div className="mb-4">
+                        <h3 className="text-base font-chicago mb-1">점수</h3>
+                        <p className="font-monaco text-2xl">
+                          {gameStats.score}
+                        </p>
+                      </div>
+                      <div className="mb-4">
+                        <h3 className="text-base font-chicago mb-1">레벨</h3>
+                        <p className="font-monaco text-2xl">
+                          {gameStats.level}
+                        </p>
+                      </div>
+                      <div className="mb-4">
+                        <h3 className="text-base font-chicago mb-1">라인</h3>
+                        <p className="font-monaco text-2xl">
+                          {gameStats.lines}
+                        </p>
+                      </div>
+
+                      {/* 다음 조각 */}
+                      <div className="mt-6 mb-4">
+                        <h3 className="text-base font-chicago mb-2">
+                          다음 조각
+                        </h3>
+                        <div className="bg-classic-secondary p-2 border-2 border-classic-secondary">
+                          <NextPiece piece={nextPiece} />
+                        </div>
+                      </div>
+
+                      {/* 홀드 조각 */}
+                      <div className="mb-4">
+                        <h3 className="text-base font-chicago mb-2">홀드</h3>
+                        <div className="bg-classic-secondary p-2 border-2 border-classic-secondary">
+                          <HoldPiece piece={holdPiece} hasUsed={hasHoldUsed} />
+                        </div>
+                      </div>
+
+                      {/* 키 설명 */}
+                      <div className="mt-6 text-xs font-monaco">
+                        <p className="mb-1">← → : 좌우 이동</p>
+                        <p className="mb-1">↑ : 회전</p>
+                        <p className="mb-1">↓ : 소프트 드롭</p>
+                        <p className="mb-1">스페이스바 : 하드 드롭</p>
+                        <p className="mb-1">C : 홀드</p>
+                        <p className="mb-1">P : 일시정지</p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        )}
+        </div>
 
-        {/* 데스크톱 레이아웃 */}
-        {!isMobile ? (
-          <div className="relative flex flex-row justify-center gap-4">
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-4">
-                <HoldPiece piece={holdPiece} />
-                <NextPiece piece={nextPiece} />
-              </div>
-              <GameInfo gameStats={gameStats} />
-              <GameControls
-                onMove={movePiece}
-                onRotate={rotatePiece}
-                onDrop={hardDrop}
-                onHold={holdCurrentPiece}
-                onPause={togglePause}
-                onRestart={restartGame}
-                gameStatus={gameStatus}
-              />
-            </div>
-
-            <div ref={boardRef} className="relative">
-              <TetrisBoard
-                board={board}
-                currentPiece={currentPiece}
-                ghostPosition={ghostPosition}
-              />
-            </div>
-          </div>
-        ) : (
-          /* 모바일 레이아웃 */
-          <div className="w-full flex flex-col items-center">
-            {/* 홀드 및 다음 조각 영역 */}
-            <div className="flex w-full justify-center space-x-4 mb-2">
-              <HoldPiece piece={holdPiece} />
-              <NextPiece piece={nextPiece} />
-            </div>
-
-            {/* 테트리스 보드 */}
-            <div ref={boardRef} className="w-full flex justify-center mb-1">
-              <TetrisBoard
-                board={board}
-                currentPiece={currentPiece}
-                ghostPosition={ghostPosition}
-              />
-            </div>
-
-            {/* 모바일 컨트롤러 - 보드 바로 아래 */}
-            <div className="w-full flex justify-center mb-2">
-              <MobileControls
-                onMove={movePiece}
-                onRotate={rotatePiece}
-                onDrop={hardDrop}
-                onHold={holdCurrentPiece}
-                onPause={togglePause}
-                onRestart={restartGame}
-                gameStatus={gameStatus}
-              />
-            </div>
-
-            {/* 게임 정보 - 컨트롤러 아래 */}
-            <div className="w-full flex justify-center mt-2">
-              <GameInfo gameStats={gameStats} />
-            </div>
-          </div>
-        )}
+        {/* 홈으로 이동 버튼 */}
+        <div className="mt-4 text-center">
+          <Link to="/" className="classic-button inline-block">
+            홈으로
+          </Link>
+        </div>
       </div>
     </div>
   )
