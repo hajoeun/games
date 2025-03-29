@@ -12,7 +12,7 @@
 이 프로젝트는 React와 TypeScript를 사용하여 개발된 웹 기반 게임 플랫폼입니다. 여러 클래식 게임을 단일 애플리케이션에서 제공합니다.
 
 ### 기술 스택
-- **프론트엔드**: React, TypeScript, Styled Components
+- **프론트엔드**: React, TypeScript, Tailwind CSS
 - **라우팅**: React Router
 - **메타데이터 관리**: React Helmet Async
 - **테스트**: Jest/Vitest, React Testing Library
@@ -37,6 +37,20 @@
 2. 홈 페이지에서는 사용 가능한 게임 목록을 카드 형태로 보여줍니다.
 3. 사용자가 게임을 선택하면 해당 게임의 라우트로 이동합니다 (예: `/games/tetris`).
 4. 각 게임은 자체 디렉토리에서 독립적으로 구현되어 있습니다.
+
+### 설정 파일
+
+프로젝트는 다음과 같은 주요 설정 파일을 포함합니다:
+
+- **package.json**: 프로젝트 의존성과 스크립트 정의
+- **vite.config.js**: Vite 빌드 도구 설정 (ESM 형식)
+- **postcss.config.js**: PostCSS 설정 (Tailwind CSS 및 autoprefixer 활성화)
+- **tailwind.config.js**: Tailwind CSS 설정 및 테마 확장
+  - 커스텀 스크린 크기 정의
+  - 텍스트 그림자 유틸리티 확장
+  - 기타 필요한 플러그인 설정
+
+이 설정 파일들은 모두 ESM(ECMAScript Modules) 형식을 사용합니다.
 
 ## 게임 구현 패턴
 
@@ -107,6 +121,12 @@
 - **정보 표시 UI**: 점수, 시간, 생명력 등을 표시
 - **게임 요소**: 게임 내 객체들을 표현하는 컴포넌트
 - **메뉴 및 컨트롤**: 게임 설정 및 컨트롤 UI
+
+컴포넌트 스타일링은 Tailwind CSS를 사용합니다:
+- **유틸리티 클래스**: 인라인 스타일링을 위한 Tailwind 클래스 활용
+- **반응형 디자인**: Tailwind의 반응형 접두사를 사용하여 다양한 화면 크기 지원
+- **복잡한 스타일**: 복잡한 스타일(예: text-shadow)의 경우 인라인 style 속성 활용
+- **테마 확장**: `tailwind.config.js`에서 정의된 확장 테마와 커스텀 플러그인 활용
 
 ### 6. 메인 게임 컴포넌트 (`[GameName].tsx`)
 
@@ -315,6 +335,24 @@ describe('게임 컨트롤러 테스트', () => {
 - 점수판 및 상태 표시
 - 컨트롤 UI 및 메뉴
 - 게임 요소 컴포넌트
+
+스타일링은 Tailwind CSS 클래스를 활용하여 구현합니다:
+```typescript
+const GameElement: React.FC = () => {
+  return (
+    <div className="bg-black w-[150px] h-[150px] flex items-center justify-center border-2 border-gray-700 rounded">
+      <span className="text-white text-xl font-bold" style={{ textShadow: '0 0 8px #3333cc' }}>
+        게임 요소
+      </span>
+    </div>
+  )
+}
+```
+
+반응형 디자인을 위해 Tailwind CSS의 반응형 접두사를 활용합니다:
+```typescript
+<div className="w-[30px] h-[30px] md:w-[25px] md:h-[25px] sm:w-[20px] sm:h-[20px]" />
+```
 
 ### 8. 메인 게임 컴포넌트 구현하기
 
