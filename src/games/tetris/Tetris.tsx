@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { BOARD_WIDTH, POINTS } from './constants'
@@ -480,7 +479,7 @@ const Tetris: React.FC = () => {
   const playerStats = loadGameStats()
 
   return (
-    <TetrisContainer>
+    <div className="flex flex-col items-center min-h-screen p-4 bg-gray-800">
       <Helmet>
         <title>테트리스 - 브라우저 아케이드</title>
         <meta
@@ -511,25 +510,30 @@ const Tetris: React.FC = () => {
         <meta name="twitter:image" content="/images/tetris-thumbnail.png" />
       </Helmet>
 
-      <Header>
-        <div>
-          <Link to="/">홈으로</Link>
+      <header className="flex justify-between items-center w-full max-width-1000 mb-4">
+        <div className="w-120">
+          <Link
+            to="/"
+            className="text-sm text-gray-400 no-underline hover:text-white"
+          >
+            홈으로
+          </Link>
         </div>
-        <Title>테트리스</Title>
+        <h1 className="text-2xl text-center text-white">테트리스</h1>
         <div />
-      </Header>
+      </header>
 
-      <GameContainer>
-        <SidePanel>
+      <div className="flex justify-center items-start gap-4 w-full max-width-1000">
+        <div className="flex flex-col gap-4">
           <HoldPiece holdPiece={holdPiece} />
           <GameInfo
             gameStats={gameStats}
             playerStats={playerStats}
             gameStatus={gameStatus}
           />
-        </SidePanel>
+        </div>
 
-        <BoardWrapper>
+        <div className="relative">
           <TetrisBoard
             board={board}
             currentPiece={currentPiece}
@@ -537,24 +541,32 @@ const Tetris: React.FC = () => {
           />
 
           {gameStatus === GameStatus.GAME_OVER && (
-            <GameOverlay>
-              <GameOverText>게임 오버</GameOverText>
-              <GameOverScore>점수: {gameStats.score}</GameOverScore>
-              <RestartButton onClick={initGame}>다시 시작</RestartButton>
-            </GameOverlay>
+            <div className="absolute top-0 left-0 w-full h-full bg-black/80 flex flex-col justify-center items-center z-100">
+              <h2 className="text-3xl mb-4 text-red-600">게임 오버</h2>
+              <p className="text-xl mb-8">최종 점수: {gameStats.score}</p>
+              <button
+                className="bg-red-600 text-white border-none py-[10px] px-5 text-xl cursor-pointer mb-4 hover:bg-red-800"
+                onClick={initGame}
+              >
+                다시 시작
+              </button>
+            </div>
           )}
 
           {gameStatus === GameStatus.PAUSED && (
-            <GameOverlay>
-              <GameOverText>일시 정지</GameOverText>
-              <RestartButton onClick={() => setGameStatus(GameStatus.PLAYING)}>
+            <div className="absolute top-0 left-0 w-full h-full bg-black/80 flex flex-col justify-center items-center z-100">
+              <h2 className="text-3xl mb-4 text-red-600">일시 정지</h2>
+              <button
+                className="bg-red-600 text-white border-none py-[10px] px-5 text-xl cursor-pointer mb-4 hover:bg-red-800"
+                onClick={() => setGameStatus(GameStatus.PLAYING)}
+              >
                 계속하기
-              </RestartButton>
-            </GameOverlay>
+              </button>
+            </div>
           )}
-        </BoardWrapper>
+        </div>
 
-        <SidePanel>
+        <div className="flex flex-col gap-4">
           <NextPiece nextPiece={nextPiece} />
           <GameControls
             onMove={movePiece}
@@ -571,109 +583,10 @@ const Tetris: React.FC = () => {
             onRestart={initGame}
             gameStatus={gameStatus}
           />
-        </SidePanel>
-      </GameContainer>
-    </TetrisContainer>
+        </div>
+      </div>
+    </div>
   )
 }
-
-// 스타일 컴포넌트
-const TetrisContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-  background-color: #121212;
-`
-
-const Header = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 1000px;
-  margin-bottom: 2rem;
-
-  div {
-    width: 120px;
-  }
-
-  a {
-    font-size: 1rem;
-    color: #aaa;
-    text-decoration: none;
-
-    &:hover {
-      color: #fff;
-    }
-  }
-`
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  text-align: center;
-  color: #fff;
-  margin: 0;
-`
-
-const GameContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 2rem;
-  width: 100%;
-  max-width: 1000px;
-`
-
-const SidePanel = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-`
-
-const BoardWrapper = styled.div`
-  position: relative;
-`
-
-const GameOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.8);
-  z-index: 10;
-`
-
-const GameOverText = styled.h2`
-  font-size: 2rem;
-  color: #fff;
-  margin-bottom: 1rem;
-`
-
-const GameOverScore = styled.p`
-  font-size: 1.5rem;
-  color: #fff;
-  margin-bottom: 2rem;
-`
-
-const RestartButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  font-size: 1.2rem;
-  background-color: #0077cc;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #0066b2;
-  }
-`
 
 export default Tetris

@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'styled-components'
 import { GameStats, GameStatus } from '../types'
 
 interface PlayerStats {
@@ -22,114 +21,92 @@ const GameInfo = ({
   gameStatus,
 }: GameInfoProps): React.ReactElement => {
   return (
-    <Container>
-      <Title>게임 정보</Title>
+    <div className="w-[150px] bg-[#1a1a1a] border-2 border-[#333] p-[10px] flex flex-col">
+      <h3 className="m-0 mb-[10px] text-white text-[1.2rem] text-center">
+        게임 정보
+      </h3>
 
-      <InfoItem>
-        <Label>점수:</Label>
-        <Value data-testid="score">{gameStats.score}</Value>
-      </InfoItem>
+      <div className="flex justify-between mb-[5px]">
+        <span className="text-[#aaa] text-[0.9rem]">점수:</span>
+        <span
+          className="text-white text-[0.9rem] font-bold"
+          data-testid="score"
+        >
+          {gameStats.score}
+        </span>
+      </div>
 
-      <InfoItem>
-        <Label>레벨:</Label>
-        <Value data-testid="level">{gameStats.level}</Value>
-      </InfoItem>
+      <div className="flex justify-between mb-[5px]">
+        <span className="text-[#aaa] text-[0.9rem]">레벨:</span>
+        <span
+          className="text-white text-[0.9rem] font-bold"
+          data-testid="level"
+        >
+          {gameStats.level}
+        </span>
+      </div>
 
-      <InfoItem>
-        <Label>라인:</Label>
-        <Value data-testid="lines">{gameStats.lines}</Value>
-      </InfoItem>
+      <div className="flex justify-between mb-[5px]">
+        <span className="text-[#aaa] text-[0.9rem]">라인:</span>
+        <span
+          className="text-white text-[0.9rem] font-bold"
+          data-testid="lines"
+        >
+          {gameStats.lines}
+        </span>
+      </div>
 
-      <InfoItem>
-        <Label>테트리스:</Label>
-        <Value>{gameStats.tetris}</Value>
-      </InfoItem>
+      <div className="flex justify-between mb-[5px]">
+        <span className="text-[#aaa] text-[0.9rem]">테트리스:</span>
+        <span className="text-white text-[0.9rem] font-bold">
+          {gameStats.tetris}
+        </span>
+      </div>
 
-      <Divider />
+      <hr className="border-none border-t border-t-[#333] my-[10px]" />
 
-      <InfoItem>
-        <Label>최고 점수:</Label>
-        <Value>{playerStats.highScore}</Value>
-      </InfoItem>
+      <div className="flex justify-between mb-[5px]">
+        <span className="text-[#aaa] text-[0.9rem]">최고 점수:</span>
+        <span className="text-white text-[0.9rem] font-bold">
+          {playerStats.highScore}
+        </span>
+      </div>
 
-      <InfoItem>
-        <Label>최고 레벨:</Label>
-        <Value>{playerStats.highLevel}</Value>
-      </InfoItem>
+      <div className="flex justify-between mb-[5px]">
+        <span className="text-[#aaa] text-[0.9rem]">최고 레벨:</span>
+        <span className="text-white text-[0.9rem] font-bold">
+          {playerStats.highLevel}
+        </span>
+      </div>
 
-      <InfoItem>
-        <Label>총 라인:</Label>
-        <Value>{playerStats.totalLines}</Value>
-      </InfoItem>
+      <div className="flex justify-between mb-[5px]">
+        <span className="text-[#aaa] text-[0.9rem]">총 라인:</span>
+        <span className="text-white text-[0.9rem] font-bold">
+          {playerStats.totalLines}
+        </span>
+      </div>
 
-      <InfoItem>
-        <Label>게임 수:</Label>
-        <Value>{playerStats.gamesPlayed}</Value>
-      </InfoItem>
+      <div className="flex justify-between mb-[5px]">
+        <span className="text-[#aaa] text-[0.9rem]">게임 수:</span>
+        <span className="text-white text-[0.9rem] font-bold">
+          {playerStats.gamesPlayed}
+        </span>
+      </div>
 
-      <Divider />
+      <hr className="border-none border-t border-t-[#333] my-[10px]" />
 
-      <Controls>
-        <ControlItem>↑: 회전</ControlItem>
-        <ControlItem>←↓→: 이동</ControlItem>
-        <ControlItem>스페이스: 하드 드롭</ControlItem>
-        <ControlItem>Shift: 홀드</ControlItem>
-        <ControlItem>P: 일시정지</ControlItem>
-        <ControlItem>R: 재시작</ControlItem>
-      </Controls>
-    </Container>
+      <div className="flex flex-col mt-[5px]">
+        <div className="text-[#888] text-[0.8rem] mb-[3px]">↑: 회전</div>
+        <div className="text-[#888] text-[0.8rem] mb-[3px]">←↓→: 이동</div>
+        <div className="text-[#888] text-[0.8rem] mb-[3px]">
+          스페이스: 하드 드롭
+        </div>
+        <div className="text-[#888] text-[0.8rem] mb-[3px]">Shift: 홀드</div>
+        <div className="text-[#888] text-[0.8rem] mb-[3px]">P: 일시정지</div>
+        <div className="text-[#888] text-[0.8rem] mb-[3px]">R: 재시작</div>
+      </div>
+    </div>
   )
 }
-
-const Container = styled.div`
-  width: 150px;
-  background-color: #1a1a1a;
-  border: 2px solid #333;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-`
-
-const Title = styled.h3`
-  margin: 0 0 10px 0;
-  color: #fff;
-  font-size: 1.2rem;
-  text-align: center;
-`
-
-const InfoItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-`
-
-const Label = styled.span`
-  color: #aaa;
-  font-size: 0.9rem;
-`
-
-const Value = styled.span`
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: bold;
-`
-
-const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid #333;
-  margin: 10px 0;
-`
-
-const Controls = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-top: 5px;
-`
-
-const ControlItem = styled.div`
-  color: #888;
-  font-size: 0.8rem;
-  margin-bottom: 3px;
-`
 
 export default GameInfo

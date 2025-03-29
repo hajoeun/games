@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import styled from 'styled-components'
 import { GameState } from './types'
 import GameBoard from './components/GameBoard'
 import GameHeader from './components/GameHeader'
@@ -36,8 +35,12 @@ const Breakout: React.FC = () => {
   }
 
   return (
-    <SpaceBackground>
-      <BreakoutContainer tabIndex={0} onKeyDown={handleKeyDown}>
+    <div className="bg-gradient-to-b from-[#000033] to-[#000022] bg-cover min-h-screen w-full flex justify-center items-center overflow-hidden relative before:content-[''] before:absolute before:w-full before:h-full before:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_1px,transparent_1px)] before:bg-[length:50px_50px] before:z-0">
+      <div
+        className="flex flex-col items-center w-full max-w-[800px] mx-auto p-5 outline-none text-white font-['Press_Start_2P','Courier_New',monospace] relative z-[1]"
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+      >
         <GameHeader score={score} lives={lives} level={level} />
 
         <GameBoard
@@ -52,51 +55,9 @@ const Breakout: React.FC = () => {
           onStartGame={handleStartGame}
           onRestartGame={handleRestartGame}
         />
-      </BreakoutContainer>
-    </SpaceBackground>
+      </div>
+    </div>
   )
 }
-
-// 배경 스타일 (우주 배경)
-const SpaceBackground = styled.div`
-  background: linear-gradient(to bottom, #000033, #000022);
-  background-size: cover;
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: radial-gradient(
-      circle at center,
-      rgba(255, 255, 255, 0.2) 1px,
-      transparent 1px
-    );
-    background-size: 50px 50px;
-    z-index: 0;
-  }
-`
-
-const BreakoutContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  outline: none;
-  color: #ffffff;
-  font-family: 'Press Start 2P', 'Courier New', monospace;
-  position: relative;
-  z-index: 1;
-`
 
 export default Breakout

@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'styled-components'
 import { GameStatus } from '../types'
 
 interface GameControlsProps {
@@ -22,77 +21,64 @@ const GameControls: React.FC<GameControlsProps> = ({
   gameStatus,
 }) => {
   return (
-    <Container>
-      <Title>게임 조작</Title>
+    <div className="w-[150px] bg-[#1a1a1a] border-2 border-[#333] p-[10px] flex flex-col gap-[10px]">
+      <h3 className="m-0 mb-[10px] text-white text-[1.2rem] text-center">
+        게임 조작
+      </h3>
 
-      <ButtonGroup>
-        <Button onClick={() => onMove(-1)}>←</Button>
-        <Button onClick={() => onMove(1)}>→</Button>
-      </ButtonGroup>
+      <div className="flex gap-[5px] justify-center">
+        <button
+          className="p-[8px] bg-[#333] text-white border border-[#444] rounded hover:bg-[#444] active:bg-[#555] min-w-[60px]"
+          onClick={() => onMove(-1)}
+        >
+          ←
+        </button>
+        <button
+          className="p-[8px] bg-[#333] text-white border border-[#444] rounded hover:bg-[#444] active:bg-[#555] min-w-[60px]"
+          onClick={() => onMove(1)}
+        >
+          →
+        </button>
+      </div>
 
-      <ButtonGroup>
-        <Button onClick={onRotate}>회전</Button>
-        <Button onClick={onDrop}>드롭</Button>
-      </ButtonGroup>
+      <div className="flex gap-[5px] justify-center">
+        <button
+          className="p-[8px] bg-[#333] text-white border border-[#444] rounded hover:bg-[#444] active:bg-[#555] min-w-[60px]"
+          onClick={onRotate}
+        >
+          회전
+        </button>
+        <button
+          className="p-[8px] bg-[#333] text-white border border-[#444] rounded hover:bg-[#444] active:bg-[#555] min-w-[60px]"
+          onClick={onDrop}
+        >
+          드롭
+        </button>
+      </div>
 
-      <ButtonGroup>
-        <Button onClick={onHold}>홀드</Button>
-        <Button onClick={onPause}>
+      <div className="flex gap-[5px] justify-center">
+        <button
+          className="p-[8px] bg-[#333] text-white border border-[#444] rounded hover:bg-[#444] active:bg-[#555] min-w-[60px]"
+          onClick={onHold}
+        >
+          홀드
+        </button>
+        <button
+          className="p-[8px] bg-[#333] text-white border border-[#444] rounded hover:bg-[#444] active:bg-[#555] min-w-[60px]"
+          onClick={onPause}
+        >
           {gameStatus === GameStatus.PLAYING ? '일시정지' : '계속하기'}
-        </Button>
-      </ButtonGroup>
+        </button>
+      </div>
 
-      <Button onClick={onRestart} fullWidth>
+      <button
+        className="p-[8px] bg-[#333] text-white border border-[#444] rounded hover:bg-[#444] active:bg-[#555] flex-1"
+        onClick={onRestart}
+      >
         다시 시작
-      </Button>
-    </Container>
+      </button>
+    </div>
   )
 }
-
-const Container = styled.div`
-  width: 150px;
-  background-color: #1a1a1a;
-  border: 2px solid #333;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`
-
-const Title = styled.h3`
-  margin: 0 0 10px 0;
-  color: #fff;
-  font-size: 1.2rem;
-  text-align: center;
-`
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 5px;
-  justify-content: center;
-`
-
-interface ButtonProps {
-  fullWidth?: boolean
-}
-
-const Button = styled.button<ButtonProps>`
-  padding: 8px;
-  background-color: #333;
-  color: #fff;
-  border: 1px solid #444;
-  border-radius: 4px;
-  cursor: pointer;
-  flex: ${(props) => (props.fullWidth ? 1 : 'initial')};
-  min-width: 60px;
-
-  &:hover {
-    background-color: #444;
-  }
-
-  &:active {
-    background-color: #555;
-  }
-`
 
 export default GameControls

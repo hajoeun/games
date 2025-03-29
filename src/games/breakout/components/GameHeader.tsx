@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'styled-components'
 
 interface GameHeaderProps {
   score: number
@@ -12,83 +11,39 @@ const GameHeader: React.FC<GameHeaderProps> = ({ score, lives, level }) => {
   const renderLivesIcons = () => {
     const icons = []
     for (let i = 0; i < lives; i++) {
-      icons.push(<LifeIcon key={i} />)
+      icons.push(
+        <div
+          key={i}
+          className="w-[15px] h-[15px] bg-[radial-gradient(circle_at_30%_30%,#ffdd33,#ff6600)] rounded-full shadow-[0_0_6px_#ff8800]"
+        />
+      )
     }
     return icons
   }
 
   return (
-    <GameHeaderContainer>
-      <ScoreSection>
-        <ScoreLabel>점수:</ScoreLabel>
-        <ScoreDisplay>{score.toString().padStart(6, '0')}</ScoreDisplay>
-      </ScoreSection>
-      <MultiplierDisplay>MULTIPLIER 1</MultiplierDisplay>
-      <InfoSection>
-        <LevelDisplay>레벨: {level}</LevelDisplay>
-        <LivesContainer>{renderLivesIcons()}</LivesContainer>
-      </InfoSection>
-    </GameHeaderContainer>
+    <div className="flex justify-between items-center w-full mb-[10px] p-[15px] bg-[rgba(20,20,40,0.7)] border-2 border-[#444488] rounded-[8px] shadow-[0_0_15px_rgba(0,100,255,0.3)]">
+      <div className="flex items-center">
+        <div className="text-[0.9rem] mr-[10px]">점수:</div>
+        <div
+          className="text-[1.2rem] text-[#33ccff]"
+          style={{ textShadow: '0 0 8px #0088ff' }}
+        >
+          {score.toString().padStart(6, '0')}
+        </div>
+      </div>
+      <div
+        className="text-[0.9rem] text-[#ffcc33]"
+        style={{ textShadow: '0 0 8px #ff8800' }}
+      >
+        MULTIPLIER 1
+      </div>
+      <div className="flex flex-col items-end">
+        <div className="text-[0.9rem] mb-[5px]">레벨: {level}</div>
+        <div className="flex gap-[5px]">{renderLivesIcons()}</div>
+      </div>
+    </div>
   )
 }
-
-const GameHeaderContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 15px;
-  background: rgba(20, 20, 40, 0.7);
-  border: 2px solid #444488;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 100, 255, 0.3);
-`
-
-const ScoreSection = styled.div`
-  display: flex;
-  align-items: center;
-`
-
-const ScoreLabel = styled.div`
-  font-size: 0.9rem;
-  margin-right: 10px;
-`
-
-const ScoreDisplay = styled.div`
-  font-size: 1.2rem;
-  color: #33ccff;
-  text-shadow: 0 0 8px #0088ff;
-`
-
-const MultiplierDisplay = styled.div`
-  font-size: 0.9rem;
-  color: #ffcc33;
-  text-shadow: 0 0 8px #ff8800;
-`
-
-const InfoSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-`
-
-const LevelDisplay = styled.div`
-  font-size: 0.9rem;
-  margin-bottom: 5px;
-`
-
-const LivesContainer = styled.div`
-  display: flex;
-  gap: 5px;
-`
-
-const LifeIcon = styled.div`
-  width: 15px;
-  height: 15px;
-  background: radial-gradient(circle at 30% 30%, #ffdd33, #ff6600);
-  border-radius: 50%;
-  box-shadow: 0 0 6px #ff8800;
-`
 
 export default GameHeader

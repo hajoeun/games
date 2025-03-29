@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState } from 'react'
-import styled from 'styled-components'
 import { BreakoutGameEngine } from '../controllers/BreakoutGameEngine'
 import { GameState } from '../types'
 
@@ -78,159 +77,87 @@ const GameBoard: React.FC<GameBoardProps> = ({
   }
 
   return (
-    <CanvasContainer>
-      <GameCanvas
+    <div className="relative w-[800px] h-[600px] rounded-[8px] overflow-hidden shadow-[0_0_30px_rgba(0,100,255,0.5)]">
+      <canvas
         ref={canvasRef}
         width={800}
         height={600}
         tabIndex={0}
         onKeyDown={handleLocalKeyDown}
+        className="block bg-[#000033]"
       />
 
       {gameState === GameState.START && (
-        <GameOverlay>
-          <GameTitle>BREAKOUT</GameTitle>
-          <StartInstructions>
+        <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-[rgba(0,0,40,0.8)] text-white z-10 p-5 text-center">
+          <h1
+            className="text-[3rem] mb-[40px] text-[#00ffff] tracking-[3px]"
+            style={{ textShadow: '0 0 15px #00aaff, 0 0 25px #0088ff' }}
+          >
+            BREAKOUT
+          </h1>
+          <p className="text-[1.2rem] mb-[30px] leading-[1.8]">
             시작하려면 스페이스 바를 누르거나
             <br />
             아래 버튼을 클릭하세요
-          </StartInstructions>
-          <RetroButton onClick={handleLocalStartGame}>게임 시작</RetroButton>
-          <ControlInstructions>
+          </p>
+          <button
+            onClick={handleLocalStartGame}
+            className="py-[10px] px-[20px] text-[1.2rem] bg-[#3355ff] text-white border-none rounded-[5px] cursor-pointer mb-[20px] transition-all hover:bg-[#4466ff] hover:shadow-[0_0_15px_rgba(0,100,255,0.8)]"
+          >
+            게임 시작
+          </button>
+          <div className="text-[1rem] mt-[20px]">
             <p>← → 키: 패들 좌우 이동</p>
             <p>스페이스 바: 게임 시작/공 발사</p>
-          </ControlInstructions>
-        </GameOverlay>
+          </div>
+        </div>
       )}
 
       {gameState === GameState.GAME_OVER && (
-        <GameOverlay>
-          <GameOverText>GAME OVER</GameOverText>
-          <FinalScore>
+        <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-[rgba(0,0,40,0.8)] text-white z-10 p-5 text-center">
+          <h2
+            className="text-[3rem] mb-[30px] text-[#ff3333] tracking-[3px]"
+            style={{ textShadow: '0 0 15px #ff0000, 0 0 25px #aa0000' }}
+          >
+            GAME OVER
+          </h2>
+          <p className="text-[1.5rem] mb-[30px]">
             최종 점수: {score.toString().padStart(6, '0')}
-          </FinalScore>
-          <RetroButton onClick={handleLocalRestartGame}>다시 시작</RetroButton>
-        </GameOverlay>
+          </p>
+          <button
+            onClick={handleLocalRestartGame}
+            className="py-[10px] px-[20px] text-[1.2rem] bg-[#3355ff] text-white border-none rounded-[5px] cursor-pointer mb-[20px] transition-all hover:bg-[#4466ff] hover:shadow-[0_0_15px_rgba(0,100,255,0.8)]"
+          >
+            다시 시작
+          </button>
+        </div>
       )}
 
       {gameState === GameState.LEVEL_CLEAR && (
-        <GameOverlay>
-          <LevelClearText>LEVEL {level} CLEAR!</LevelClearText>
-          <ClearInstructions>
+        <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-[rgba(0,0,40,0.8)] text-white z-10 p-5 text-center">
+          <h2
+            className="text-[2.5rem] mb-[30px] text-[#33ff33] tracking-[2px]"
+            style={{ textShadow: '0 0 15px #00ff00, 0 0 25px #00aa00' }}
+          >
+            LEVEL {level} CLEAR!
+          </h2>
+          <p className="text-[1.2rem] mb-[30px] leading-[1.8]">
             다음 레벨을 시작하려면
             <br />
             스페이스 바를 누르거나
             <br />
             아래 버튼을 클릭하세요
-          </ClearInstructions>
-          <RetroButton onClick={handleLocalStartGame}>다음 레벨</RetroButton>
-        </GameOverlay>
+          </p>
+          <button
+            onClick={handleLocalStartGame}
+            className="py-[10px] px-[20px] text-[1.2rem] bg-[#3355ff] text-white border-none rounded-[5px] cursor-pointer mb-[20px] transition-all hover:bg-[#4466ff] hover:shadow-[0_0_15px_rgba(0,100,255,0.8)]"
+          >
+            다음 레벨
+          </button>
+        </div>
       )}
-    </CanvasContainer>
+    </div>
   )
 }
-
-// 스타일 컴포넌트 정의
-const CanvasContainer = styled.div`
-  position: relative;
-  width: 800px;
-  height: 600px;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 0 30px rgba(0, 100, 255, 0.5);
-`
-
-const GameCanvas = styled.canvas`
-  display: block;
-  background-color: #000033;
-`
-
-const GameOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 40, 0.8);
-  color: #ffffff;
-  z-index: 10;
-  padding: 20px;
-  text-align: center;
-`
-
-const GameTitle = styled.h1`
-  font-size: 3rem;
-  margin-bottom: 40px;
-  color: #00ffff;
-  text-shadow: 0 0 15px #00aaff, 0 0 25px #0088ff;
-  letter-spacing: 3px;
-`
-
-const GameOverText = styled.h2`
-  font-size: 3rem;
-  margin-bottom: 30px;
-  color: #ff3333;
-  text-shadow: 0 0 15px #ff0000, 0 0 25px #aa0000;
-  letter-spacing: 3px;
-`
-
-const LevelClearText = styled.h2`
-  font-size: 2.5rem;
-  margin-bottom: 30px;
-  color: #33ff33;
-  text-shadow: 0 0 15px #00ff00, 0 0 25px #00aa00;
-  letter-spacing: 2px;
-`
-
-const StartInstructions = styled.p`
-  font-size: 1.2rem;
-  margin-bottom: 30px;
-  line-height: 1.8;
-`
-
-const ClearInstructions = styled.p`
-  font-size: 1.2rem;
-  margin-bottom: 30px;
-  line-height: 1.8;
-`
-
-const FinalScore = styled.p`
-  font-size: 1.5rem;
-  margin-bottom: 30px;
-`
-
-const RetroButton = styled.button`
-  background: linear-gradient(to bottom, #4466ff, #0033cc);
-  color: white;
-  border: none;
-  padding: 15px 30px;
-  font-size: 1.2rem;
-  font-family: inherit;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 20px 0;
-  box-shadow: 0 0 15px rgba(0, 100, 255, 0.7);
-  transition: all 0.2s;
-
-  &:hover {
-    background: linear-gradient(to bottom, #5577ff, #1144dd);
-    transform: scale(1.05);
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-`
-
-const ControlInstructions = styled.div`
-  margin-top: 20px;
-  font-size: 0.9rem;
-  opacity: 0.8;
-  line-height: 1.6;
-`
 
 export default GameBoard

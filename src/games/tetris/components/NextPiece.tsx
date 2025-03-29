@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'styled-components'
 import { Tetromino } from '../types'
 import { TETROMINO_COLORS } from '../constants'
 
@@ -9,66 +8,34 @@ interface NextPieceProps {
 
 const NextPiece: React.FC<NextPieceProps> = ({ nextPiece }) => {
   if (!nextPiece) {
-    return <Container />
+    return (
+      <div className="w-[150px] bg-[#1a1a1a] border-2 border-[#333] p-[10px] flex flex-col items-center" />
+    )
   }
 
   const { shape, type } = nextPiece
   const color = TETROMINO_COLORS[type]
 
   return (
-    <Container>
-      <Title>다음 블록</Title>
-      <PiecePreview>
+    <div className="w-[150px] bg-[#1a1a1a] border-2 border-[#333] p-[10px] flex flex-col items-center">
+      <h3 className="m-0 mb-[10px] text-white text-[1.2rem]">다음 블록</h3>
+      <div className="flex flex-col items-center justify-center h-[100px]">
         {shape.map((row, y) => (
-          <Row key={y}>
+          <div className="flex" key={y}>
             {row.map((cell, x) => (
-              <Cell key={x} filled={cell !== 0} color={color} />
+              <div
+                key={x}
+                className="w-[25px] h-[25px] border border-[#222]"
+                style={{
+                  backgroundColor: cell !== 0 ? color : 'transparent',
+                }}
+              />
             ))}
-          </Row>
+          </div>
         ))}
-      </PiecePreview>
-    </Container>
+      </div>
+    </div>
   )
 }
-
-const Container = styled.div`
-  width: 150px;
-  background-color: #1a1a1a;
-  border: 2px solid #333;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
-
-const Title = styled.h3`
-  margin: 0 0 10px 0;
-  color: #fff;
-  font-size: 1.2rem;
-`
-
-const PiecePreview = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100px;
-`
-
-const Row = styled.div`
-  display: flex;
-`
-
-interface CellProps {
-  filled: boolean
-  color: string
-}
-
-const Cell = styled.div<CellProps>`
-  width: 25px;
-  height: 25px;
-  border: 1px solid #222;
-  background-color: ${(props) => (props.filled ? props.color : 'transparent')};
-`
 
 export default NextPiece

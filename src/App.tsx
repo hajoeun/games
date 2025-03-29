@@ -1,6 +1,5 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import styled from 'styled-components'
 import { HelmetProvider, Helmet } from 'react-helmet-async'
 import Home from './pages/Home'
 import Tetris from './games/tetris/Tetris'
@@ -9,7 +8,7 @@ import Breakout from './games/breakout/Breakout'
 const App: React.FC = () => {
   return (
     <HelmetProvider>
-      <AppContainer>
+      <div className="w-full min-h-screen flex flex-col">
         <Helmet>
           <title>브라우저 아케이드 - 무료 온라인 게임</title>
           <meta
@@ -72,16 +71,9 @@ const App: React.FC = () => {
             <Route path="/games/breakout" element={<Breakout />} />
           </Routes>
         </Router>
-      </AppContainer>
+      </div>
     </HelmetProvider>
   )
 }
-
-const AppContainer = styled.div`
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-`
 
 export default App

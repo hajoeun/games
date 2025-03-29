@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'styled-components'
 import { Board, Tetromino } from '../types'
 import { TETROMINO_COLORS } from '../constants'
 
@@ -56,66 +55,36 @@ const TetrisBoard: React.FC<TetrisBoardProps> = ({
   }
 
   return (
-    <BoardContainer data-testid="tetris-board">
+    <div
+      className="flex flex-col border-2 border-[#333] bg-black p-0.5 shadow-[0_0_20px_rgba(0,0,0,0.4)]"
+      data-testid="tetris-board"
+    >
       {board.map((row, y) => (
-        <Row key={y}>
+        <div className="flex" key={y}>
           {row.map((cell, x) => {
             const isActive = isActiveTetromino(x, y)
             const isGhost = isGhostTetromino(x, y)
+            const cellColor = isActive
+              ? TETROMINO_COLORS[currentPiece!.type]
+              : isGhost
+              ? TETROMINO_COLORS.ghost
+              : cell.color
+            const isFilled = cell.filled || isActive
 
             return (
-              <Cell
+              <div
                 key={x}
-                filled={cell.filled || isActive}
-                color={
-                  isActive
-                    ? TETROMINO_COLORS[currentPiece!.type]
-                    : isGhost
-                    ? TETROMINO_COLORS.ghost
-                    : cell.color
-                }
+                className={`w-[30px] h-[30px] border border-[#222] md:w-[25px] md:h-[25px] sm:w-[20px] sm:h-[20px]`}
+                style={{
+                  backgroundColor: isFilled ? cellColor : 'transparent',
+                }}
               />
             )
           })}
-        </Row>
+        </div>
       ))}
-    </BoardContainer>
+    </div>
   )
 }
-
-const BoardContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  border: 2px solid #333;
-  background-color: #000;
-  padding: 2px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-`
-
-const Row = styled.div`
-  display: flex;
-`
-
-interface CellProps {
-  filled: boolean
-  color: string
-}
-
-const Cell = styled.div<CellProps>`
-  width: 30px;
-  height: 30px;
-  border: 1px solid #222;
-  background-color: ${(props) => (props.filled ? props.color : 'transparent')};
-
-  @media (max-width: 768px) {
-    width: 25px;
-    height: 25px;
-  }
-
-  @media (max-width: 480px) {
-    width: 20px;
-    height: 20px;
-  }
-`
 
 export default TetrisBoard
