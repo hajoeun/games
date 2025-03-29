@@ -1,0 +1,7 @@
+---
+description: User interface design rule
+globs: tailwind.config.js, *.tsx, *.css
+---
+## 디자인 규칙
+
+UI를 디자인할 땐 [DESIGN.md](mdc:DESIGN.md) 문서를 기반으로 작업해야 합니다. 작업 중에 유저의 지시에 의해 디자인 규칙이 변경된다면 [DESIGN.md](mdc:DESIGN.md) 파일을 함께 수정해야 합니다.
