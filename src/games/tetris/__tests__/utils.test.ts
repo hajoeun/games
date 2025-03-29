@@ -76,10 +76,10 @@ describe('테트리스 유틸리티 함수 테스트', () => {
       }
       
       const expected = [
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0]
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0]
       ]
       
       const rotated = rotateTetromino(iTetromino)

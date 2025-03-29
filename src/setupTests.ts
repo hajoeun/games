@@ -1,12 +1,13 @@
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
 // localStorage 모의 구현
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  clear: jest.fn(),
-  removeItem: jest.fn(),
-  key: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  clear: vi.fn(),
+  removeItem: vi.fn(),
+  key: vi.fn(),
   length: 0
 };
 

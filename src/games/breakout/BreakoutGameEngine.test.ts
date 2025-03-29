@@ -1,15 +1,16 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { BreakoutGameEngine } from './BreakoutGameEngine';
 import { GameState } from './types';
 
 // Canvas 및 Context 모의 객체 생성
 class MockCanvasRenderingContext2D {
   fillStyle: string = '';
-  clearRect = jest.fn();
-  beginPath = jest.fn();
-  rect = jest.fn();
-  fill = jest.fn();
-  closePath = jest.fn();
-  arc = jest.fn();
+  clearRect = vi.fn();
+  beginPath = vi.fn();
+  rect = vi.fn();
+  fill = vi.fn();
+  closePath = vi.fn();
+  arc = vi.fn();
 }
 
 describe('BreakoutGameEngine', () => {
@@ -26,30 +27,30 @@ describe('BreakoutGameEngine', () => {
     
     // 모의 컨텍스트 설정
     mockCtx = new MockCanvasRenderingContext2D();
-    jest.spyOn(canvas, 'getContext').mockReturnValue(mockCtx as unknown as CanvasRenderingContext2D);
+    vi.spyOn(canvas, 'getContext').mockReturnValue(mockCtx as unknown as CanvasRenderingContext2D);
     
     // 콜백 모의 함수 생성
     mockCallbacks = {
-      onScoreChange: jest.fn(),
-      onLivesChange: jest.fn(),
-      onGameStateChange: jest.fn(),
-      onLevelChange: jest.fn()
+      onScoreChange: vi.fn(),
+      onLivesChange: vi.fn(),
+      onGameStateChange: vi.fn(),
+      onLevelChange: vi.fn()
     };
     
     // 게임 엔진 생성
     engine = new BreakoutGameEngine(canvas, mockCallbacks);
     
     // requestAnimationFrame 모의 함수
-    jest.spyOn(window, 'requestAnimationFrame').mockImplementation((callback: FrameRequestCallback) => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback: FrameRequestCallback) => {
       callback(0);
       return 0;
     });
     
-    jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
   });
   
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
   
   // 테스트 케이스 1: 패들 이동 테스트
