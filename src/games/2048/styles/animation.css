@@ -6,13 +6,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: bold;
   transition-property: transform, top, left;
   transition-timing-function: ease-in-out;
   transition-duration: 150ms;
   user-select: none;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   z-index: 10;
   will-change: transform, opacity, top, left;
   font-family: 'Arial', sans-serif;
@@ -63,13 +63,12 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1/1;
-  background-color: #bbada0;
-  border-radius: 8px;
+  background-color: var(--board-bg, #bbada0);
+  border-radius: 12px;
   padding: 15px;
-  margin-top: 20px;
+  margin: 20px auto;
   touch-action: none; /* 모바일에서 스크롤 방지 - 이 게임 영역 내에서 스와이프만 작동하도록 */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  margin: 0 auto; /* 중앙 정렬 */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   max-width: 500px; /* 최대 너비 제한 */
   overflow: hidden; /* 내용 넘침 방지 */
 }
@@ -77,9 +76,9 @@
 /* 그리드 셀 스타일 */
 .grid-cell {
   position: absolute;
-  background-color: rgba(238, 228, 218, 0.35);
-  border-radius: 6px;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+  background-color: var(--grid-cell-bg, rgba(238, 228, 218, 0.35));
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--grid-cell-shadow, rgba(0, 0, 0, 0.05));
 }
 
 /* 게임 오버 오버레이 */

@@ -11,9 +11,10 @@ import { TileInfo } from '../types'
 interface TileProps {
   tile: TileInfo
   size: number
+  boardRef: React.RefObject<HTMLDivElement>
 }
 
-const Tile: React.FC<TileProps> = ({ tile, size }) => {
+const Tile: React.FC<TileProps> = ({ tile, size, boardRef }) => {
   const { value, position, previousPosition, isNew, mergedFrom } = tile
   const tileRef = useRef<HTMLDivElement>(null)
 
@@ -59,15 +60,15 @@ const Tile: React.FC<TileProps> = ({ tile, size }) => {
   // 타일 위치 및 이동 스타일
   const getTileStyle = () => {
     const tileColor = getTileColor()
-    const cellPadding = 5 // 그리드 셀과 동일한 패딩 값 사용
+    const cellPadding = 5 // 패딩 값 (그리드 셀과 일치)
 
+    // 보드 크기와 타일 정확한 위치 계산
     const style: React.CSSProperties = {
-      // 픽셀 단위로 직접 계산 - 그리드 셀과 동일한 방식 사용
-      top: `${position.row * size + cellPadding}px`,
-      left: `${position.col * size + cellPadding}px`,
       width: `${size - cellPadding * 2}px`,
       height: `${size - cellPadding * 2}px`,
       lineHeight: `${size - cellPadding * 2}px`,
+      top: `${position.row * size + cellPadding + 15}px`, // 15px는 보드 패딩
+      left: `${position.col * size + cellPadding + 15}px`, // 15px는 보드 패딩
       backgroundColor: tileColor.background,
       color: tileColor.text,
       zIndex: mergedFrom ? 30 : isNew ? 20 : 10,
@@ -75,7 +76,7 @@ const Tile: React.FC<TileProps> = ({ tile, size }) => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      borderRadius: '6px',
+      borderRadius: '8px',
       fontWeight: 'bold',
       position: 'absolute',
       transform: 'translate3d(0, 0, 0)', // 하드웨어 가속 활성화

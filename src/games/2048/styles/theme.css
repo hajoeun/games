@@ -1,0 +1,68 @@
+/* 2048 게임 테마 스타일 (라이트/다크 모드) */
+
+:root {
+  /* 라이트 모드 기본 색상 */
+  --board-bg: #bbada0;
+  --grid-cell-bg: rgba(238, 228, 218, 0.35);
+  --grid-cell-shadow: rgba(0, 0, 0, 0.05);
+  
+  /* 타일 색상 - 라이트 모드 */
+  --tile-2-bg: #eee4da;
+  --tile-2-text: #776e65;
+  --tile-4-bg: #ede0c8;
+  --tile-4-text: #776e65;
+  --tile-8-bg: #f2b179;
+  --tile-8-text: #f9f6f2;
+  --tile-16-bg: #f59563;
+  --tile-16-text: #f9f6f2;
+  --tile-32-bg: #f67c5f;
+  --tile-32-text: #f9f6f2;
+  --tile-64-bg: #f65e3b;
+  --tile-64-text: #f9f6f2;
+  --tile-128-bg: #edcf72;
+  --tile-128-text: #f9f6f2;
+  --tile-256-bg: #edcc61;
+  --tile-256-text: #f9f6f2;
+  --tile-512-bg: #edc850;
+  --tile-512-text: #f9f6f2;
+  --tile-1024-bg: #edc53f;
+  --tile-1024-text: #f9f6f2;
+  --tile-2048-bg: #edc22e;
+  --tile-2048-text: #f9f6f2;
+  --tile-super-bg: #3c3a32;
+  --tile-super-text: #f9f6f2;
+}
+
+/* 다크 모드 스타일 */
+.dark {
+  /* 다크 모드 기본 색상 */
+  --board-bg: #3a3a3c;
+  --grid-cell-bg: rgba(70, 70, 75, 0.35);
+  --grid-cell-shadow: rgba(255, 255, 255, 0.05);
+  
+  /* 타일 색상 - 다크 모드 */
+  --tile-2-bg: #565656;
+  --tile-2-text: #f5f5f5;
+  --tile-4-bg: #636363;
+  --tile-4-text: #f5f5f5;
+  --tile-8-bg: #ce9166;
+  --tile-8-text: #f9f6f2;
+  --tile-16-bg: #d47f51;
+  --tile-16-text: #f9f6f2;
+  --tile-32-bg: #d56e4a;
+  --tile-32-text: #f9f6f2;
+  --tile-64-bg: #d35532;
+  --tile-64-text: #f9f6f2;
+  --tile-128-bg: #c9ac5b;
+  --tile-128-text: #f9f6f2;
+  --tile-256-bg: #c9a84a;
+  --tile-256-text: #f9f6f2;
+  --tile-512-bg: #c9a53a;
+  --tile-512-text: #f9f6f2;
+  --tile-1024-bg: #c9a22c;
+  --tile-1024-text: #f9f6f2;
+  --tile-2048-bg: #c9a01d;
+  --tile-2048-text: #f9f6f2;
+  --tile-super-bg: #2a292a;
+  --tile-super-text: #f9f6f2;
+} 

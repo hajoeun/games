@@ -39,22 +39,56 @@ export const DIRECTION_TRANSFORMS = {
   RIGHT: { x: 100, y: 0 },
 };
 
-// 타일별 색상
+// 타일 색상
 export const TILE_COLORS = {
-  0: { background: '#cdc1b4', text: '#776e65' },
-  2: { background: '#eee4da', text: '#776e65' },
-  4: { background: '#ede0c8', text: '#776e65' },
-  8: { background: '#f2b179', text: '#f9f6f2' },
-  16: { background: '#f59563', text: '#f9f6f2' },
-  32: { background: '#f67c5f', text: '#f9f6f2' },
-  64: { background: '#f65e3b', text: '#f9f6f2' },
-  128: { background: '#edcf72', text: '#f9f6f2' },
-  256: { background: '#edcc61', text: '#f9f6f2' },
-  512: { background: '#edc850', text: '#f9f6f2' },
-  1024: { background: '#edc53f', text: '#f9f6f2' },
-  2048: { background: '#edc22e', text: '#f9f6f2' },
-  4096: { background: '#3c3a32', text: '#f9f6f2' },
-  8192: { background: '#3c3a32', text: '#f9f6f2' },
+  2: {
+    background: 'var(--tile-2-bg, #eee4da)',
+    text: 'var(--tile-2-text, #776e65)'
+  },
+  4: {
+    background: 'var(--tile-4-bg, #ede0c8)',
+    text: 'var(--tile-4-text, #776e65)'
+  },
+  8: {
+    background: 'var(--tile-8-bg, #f2b179)',
+    text: 'var(--tile-8-text, #f9f6f2)'
+  },
+  16: {
+    background: 'var(--tile-16-bg, #f59563)',
+    text: 'var(--tile-16-text, #f9f6f2)'
+  },
+  32: {
+    background: 'var(--tile-32-bg, #f67c5f)',
+    text: 'var(--tile-32-text, #f9f6f2)'
+  },
+  64: {
+    background: 'var(--tile-64-bg, #f65e3b)',
+    text: 'var(--tile-64-text, #f9f6f2)'
+  },
+  128: {
+    background: 'var(--tile-128-bg, #edcf72)',
+    text: 'var(--tile-128-text, #f9f6f2)'
+  },
+  256: {
+    background: 'var(--tile-256-bg, #edcc61)',
+    text: 'var(--tile-256-text, #f9f6f2)'
+  },
+  512: {
+    background: 'var(--tile-512-bg, #edc850)',
+    text: 'var(--tile-512-text, #f9f6f2)'
+  },
+  1024: {
+    background: 'var(--tile-1024-bg, #edc53f)',
+    text: 'var(--tile-1024-text, #f9f6f2)'
+  },
+  2048: {
+    background: 'var(--tile-2048-bg, #edc22e)',
+    text: 'var(--tile-2048-text, #f9f6f2)'
+  },
+  'super': {
+    background: 'var(--tile-super-bg, #3c3a32)',
+    text: 'var(--tile-super-text, #f9f6f2)'
+  }
 };
 
 // 애니메이션 클래스 이름
