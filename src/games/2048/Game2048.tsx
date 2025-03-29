@@ -108,14 +108,11 @@ const Game2048 = () => {
 
   // 게임 이동 처리 함수 - useRef를 사용하여 항상 최신 상태 참조
   const handleMove = useCallback((direction: Direction) => {
-    console.log(`handleMove 호출: 방향=${direction}`)
-
     // ref에서 최신 상태 가져오기
     const currentState = gameStateRef.current
 
     // 게임 종료 상태이거나 애니메이션 중이면 무시
     if (currentState.gameOver || currentState.animating) {
-      console.log('이동 무시: 게임 종료 또는 애니메이션 중')
       return
     }
 
@@ -135,7 +132,6 @@ const Game2048 = () => {
 
     // 이동이 없으면 애니메이션 상태만 해제하고 리턴
     if (!moved) {
-      console.log('이동 없음: 애니메이션 상태 해제')
       setGameState((prev) => ({ ...prev, animating: false }))
       return
     }
@@ -159,7 +155,6 @@ const Game2048 = () => {
     // 승리 상태 확인
     let winStatus = currentState.hasWon
     if (gameWon && !currentState.hasWon) {
-      console.log('게임 승리!')
       winStatus = true
     }
 
@@ -185,7 +180,6 @@ const Game2048 = () => {
 
   // 게임 리셋
   const handleReset = useCallback(() => {
-    console.log('게임 리셋')
     const newBoard = createNewGame()
     const newTiles = boardToTiles(newBoard)
 
@@ -204,7 +198,6 @@ const Game2048 = () => {
 
   // 승리 후 계속하기
   const handleContinue = useCallback(() => {
-    console.log('게임 계속하기')
     setGameState((prev) => ({
       ...prev,
       gameOver: false,

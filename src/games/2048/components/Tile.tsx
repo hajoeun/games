@@ -115,9 +115,6 @@ const Tile: React.FC<TileProps> = ({ tile, size, boardRef }) => {
 
     // 병합 애니메이션 디버깅 및 강화
     if (mergedFrom) {
-      console.log(
-        `병합 타일 애니메이션: 값=${value}, 위치=[${position.row}, ${position.col}]`
-      )
       // 타일 병합 시 애니메이션이 확실히 적용되도록 클래스를 다시 추가
       const tile = tileRef.current
       tile.classList.remove('tile-merged')
@@ -129,9 +126,6 @@ const Tile: React.FC<TileProps> = ({ tile, size, boardRef }) => {
 
     // 새 타일 애니메이션 디버깅 및 강화
     if (isNew) {
-      console.log(
-        `새 타일 애니메이션: 값=${value}, 위치=[${position.row}, ${position.col}]`
-      )
       // 애니메이션 확실히 적용 (필요시)
       const tile = tileRef.current
       tile.classList.remove('tile-new')
@@ -147,12 +141,7 @@ const Tile: React.FC<TileProps> = ({ tile, size, boardRef }) => {
         previousPosition.col !== position.col)
     ) {
       // 이전 위치와 현재 위치가 다른 경우
-      requestAnimationFrame(() => {
-        // 이동 디버깅
-        console.log(
-          `타일 이동: 값=${value}, [${previousPosition.row}, ${previousPosition.col}] -> [${position.row}, ${position.col}]`
-        )
-      })
+      // 이동 처리는 CSS transition으로 자동 적용됨
     }
   }, [position, previousPosition, value, isNew, mergedFrom, size])
 
