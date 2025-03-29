@@ -1,5 +1,14 @@
-import { Ball, Boundaries, Brick, BrickType, GameCallbacks, GameState, Paddle } from './types';
-import { levels } from './levels';
+import { Ball, Boundaries, Brick, BrickType, GameCallbacks, GameState, Paddle } from '../types';
+import { levels } from '../levels';
+import { 
+  PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_SPEED, 
+  BALL_RADIUS, BALL_SPEED,
+  BRICK_ROW_COUNT, BRICK_COLUMN_COUNT, 
+  BRICK_WIDTH, BRICK_HEIGHT, BRICK_PADDING,
+  BRICK_OFFSET_TOP, BRICK_OFFSET_LEFT,
+  STAR_COUNT, GAME_COLORS 
+} from '../constants';
+import { darkenColor, lightenColor, getCurrentTime } from '../utils';
 
 export class BreakoutGameEngine {
   private canvas: HTMLCanvasElement;
@@ -19,47 +28,8 @@ export class BreakoutGameEngine {
   private bricks: Brick[][] = [];
   private boundaries: Boundaries;
 
-  // 게임 설정
-  private readonly PADDLE_WIDTH = 75;
-  private readonly PADDLE_HEIGHT = 10;
-  private readonly PADDLE_SPEED = 7;
-  private readonly BALL_RADIUS = 6;
-  private readonly BALL_SPEED = 5;
-  private readonly BRICK_ROW_COUNT = 6;
-  private readonly BRICK_COLUMN_COUNT = 10;
-  private readonly BRICK_WIDTH = 75;
-  private readonly BRICK_HEIGHT = 20;
-  private readonly BRICK_PADDING = 4;
-  private readonly BRICK_OFFSET_TOP = 60;
-  private readonly BRICK_OFFSET_LEFT = 25;
-
-  // 색상 설정 - 3D 입체 스타일
-  private readonly GAME_COLORS = {
-    background: '#000033',  // 어두운 심우주 배경색
-    stars: ['#FFFFFF', '#CCCCFF', '#AAAAFF', '#FFFFAA'], // 별 색상
-    ball: {
-      main: '#FFFFFF',      // 흰색 공
-      glow: '#99CCFF'       // 공 주변 글로우 효과
-    },
-    paddle: {
-      top: '#FFDD33',       // 패들 상단 (밝은 노란색)
-      bottom: '#FF9900',    // 패들 하단 (어두운 노란색)
-      glow: '#FFCC00'       // 패들 주변 글로우 효과
-    },
-    brick: {
-      row1: { top: '#FF3333', bottom: '#CC0000' }, // 빨간색 계열
-      row2: { top: '#FF9933', bottom: '#CC6600' }, // 주황색 계열
-      row3: { top: '#FFFF33', bottom: '#CCCC00' }, // 노란색 계열
-      row4: { top: '#33FF33', bottom: '#00CC00' }, // 초록색 계열
-      row5: { top: '#33CCFF', bottom: '#0099CC' }, // 파란색 계열
-      row6: { top: '#9933FF', bottom: '#6600CC' }, // 보라색 계열
-    },
-    border: '#333366',      // 테두리 색상
-  };
-
   // 별 배경을 위한 속성
   private stars: {x: number, y: number, size: number, color: string}[] = [];
-  private readonly STAR_COUNT = 100;
 
   // 키보드 상태
   private rightPressed: boolean = false;
@@ -71,7 +41,7 @@ export class BreakoutGameEngine {
     this.callbacks = callbacks;
     
     // 캔버스 배경색 설정
-    this.canvas.style.backgroundColor = this.GAME_COLORS.background;
+    this.canvas.style.backgroundColor = GAME_COLORS.background;
     
     // 경계 설정
     this.boundaries = {
@@ -83,21 +53,21 @@ export class BreakoutGameEngine {
     
     // 패들 초기화
     this.paddle = {
-      x: (canvas.width - this.PADDLE_WIDTH) / 2,
-      y: canvas.height - this.PADDLE_HEIGHT - 10,
-      width: this.PADDLE_WIDTH,
-      height: this.PADDLE_HEIGHT,
-      speed: this.PADDLE_SPEED
+      x: (canvas.width - PADDLE_WIDTH) / 2,
+      y: canvas.height - PADDLE_HEIGHT - 10,
+      width: PADDLE_WIDTH,
+      height: PADDLE_HEIGHT,
+      speed: PADDLE_SPEED
     };
     
     // 공 초기화
     this.ball = {
       x: canvas.width / 2,
-      y: this.paddle.y - this.BALL_RADIUS,
-      radius: this.BALL_RADIUS,
+      y: this.paddle.y - BALL_RADIUS,
+      radius: BALL_RADIUS,
       dx: 0,
       dy: 0,
-      speed: this.BALL_SPEED,
+      speed: BALL_SPEED,
       isLaunched: false
     };
     
@@ -148,12 +118,12 @@ export class BreakoutGameEngine {
   // 별 초기화
   private initStars(): void {
     this.stars = [];
-    for (let i = 0; i < this.STAR_COUNT; i++) {
+    for (let i = 0; i < STAR_COUNT; i++) {
       const star = {
         x: Math.random() * this.canvas.width,
         y: Math.random() * this.canvas.height,
         size: Math.random() * 2 + 0.5,
-        color: this.GAME_COLORS.stars[Math.floor(Math.random() * this.GAME_COLORS.stars.length)]
+        color: GAME_COLORS.stars[Math.floor(Math.random() * GAME_COLORS.stars.length)]
       };
       this.stars.push(star);
     }
@@ -178,10 +148,10 @@ export class BreakoutGameEngine {
           
           // 벽돌 생성
           const brick: Brick = {
-            x: c * (this.BRICK_WIDTH + this.BRICK_PADDING) + this.BRICK_OFFSET_LEFT,
-            y: r * (this.BRICK_HEIGHT + this.BRICK_PADDING) + this.BRICK_OFFSET_TOP,
-            width: this.BRICK_WIDTH,
-            height: this.BRICK_HEIGHT,
+            x: c * (BRICK_WIDTH + BRICK_PADDING) + BRICK_OFFSET_LEFT,
+            y: r * (BRICK_HEIGHT + BRICK_PADDING) + BRICK_OFFSET_TOP,
+            width: BRICK_WIDTH,
+            height: BRICK_HEIGHT,
             type: brickType,
             hits: 0,
             maxHits: brickType === BrickType.ENHANCED ? 2 : 1,
@@ -256,9 +226,9 @@ export class BreakoutGameEngine {
 
   // 공과 패들 재설정
   private resetBallAndPaddle(): void {
-    this.paddle.x = (this.canvas.width - this.PADDLE_WIDTH) / 2;
+    this.paddle.x = (this.canvas.width - PADDLE_WIDTH) / 2;
     this.ball.x = this.canvas.width / 2;
-    this.ball.y = this.paddle.y - this.BALL_RADIUS;
+    this.ball.y = this.paddle.y - BALL_RADIUS;
     this.ball.dx = 0;
     this.ball.dy = 0;
     this.ball.isLaunched = false;
@@ -267,8 +237,8 @@ export class BreakoutGameEngine {
   // 공 발사 - private 에서 public으로 변경
   public launchBall(): void {
     if (!this.ball.isLaunched && this.gameState === GameState.PLAYING) {
-      this.ball.dx = this.BALL_SPEED * (Math.random() > 0.5 ? 1 : -1);
-      this.ball.dy = -this.BALL_SPEED;
+      this.ball.dx = BALL_SPEED * (Math.random() > 0.5 ? 1 : -1);
+      this.ball.dy = -BALL_SPEED;
       this.ball.isLaunched = true;
     }
   }
@@ -466,7 +436,7 @@ export class BreakoutGameEngine {
   // 테두리 그리기
   private drawBorder(): void {
     this.ctx.beginPath();
-    this.ctx.strokeStyle = this.GAME_COLORS.border;
+    this.ctx.strokeStyle = GAME_COLORS.border;
     this.ctx.lineWidth = 3;
     this.ctx.strokeRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.closePath();
@@ -486,8 +456,8 @@ export class BreakoutGameEngine {
       this.paddle.x, this.paddle.y, 
       this.paddle.x, this.paddle.y + this.paddle.height
     );
-    paddleGradient.addColorStop(0, this.GAME_COLORS.paddle.top);
-    paddleGradient.addColorStop(1, this.GAME_COLORS.paddle.bottom);
+    paddleGradient.addColorStop(0, GAME_COLORS.paddle.top);
+    paddleGradient.addColorStop(1, GAME_COLORS.paddle.bottom);
     
     this.ctx.beginPath();
     this.ctx.rect(this.paddle.x, this.paddle.y, this.paddle.width, this.paddle.height);
@@ -503,9 +473,9 @@ export class BreakoutGameEngine {
     // 패들 글로우 효과
     this.ctx.beginPath();
     this.ctx.rect(this.paddle.x, this.paddle.y, this.paddle.width, this.paddle.height);
-    this.ctx.strokeStyle = this.GAME_COLORS.paddle.glow;
+    this.ctx.strokeStyle = GAME_COLORS.paddle.glow;
     this.ctx.lineWidth = 2;
-    this.ctx.shadowColor = this.GAME_COLORS.paddle.glow;
+    this.ctx.shadowColor = GAME_COLORS.paddle.glow;
     this.ctx.shadowBlur = 10;
     this.ctx.stroke();
     this.ctx.shadowBlur = 0;
@@ -538,9 +508,9 @@ export class BreakoutGameEngine {
     // 공 글로우 효과
     this.ctx.beginPath();
     this.ctx.arc(this.ball.x, this.ball.y, this.ball.radius, 0, Math.PI * 2);
-    this.ctx.strokeStyle = this.GAME_COLORS.ball.glow;
+    this.ctx.strokeStyle = GAME_COLORS.ball.glow;
     this.ctx.lineWidth = 1;
-    this.ctx.shadowColor = this.GAME_COLORS.ball.glow;
+    this.ctx.shadowColor = GAME_COLORS.ball.glow;
     this.ctx.shadowBlur = 15;
     this.ctx.stroke();
     this.ctx.shadowBlur = 0;
@@ -553,16 +523,38 @@ export class BreakoutGameEngine {
       for (let c = 0; c < this.bricks[r].length; c++) {
         const brick = this.bricks[r][c];
         if (brick && brick.isVisible) {
-          // 벽돌 색상 설정 - 행별로 다른 색상 적용
+          // 레벨별 벽돌 색상 계산
           let rowColor;
           switch(r) {
-            case 0: rowColor = this.GAME_COLORS.brick.row1; break;
-            case 1: rowColor = this.GAME_COLORS.brick.row2; break;
-            case 2: rowColor = this.GAME_COLORS.brick.row3; break;
-            case 3: rowColor = this.GAME_COLORS.brick.row4; break;
-            case 4: rowColor = this.GAME_COLORS.brick.row5; break;
-            case 5: rowColor = this.GAME_COLORS.brick.row6; break;
-            default: rowColor = this.GAME_COLORS.brick.row1;
+            case 0: rowColor = GAME_COLORS.brick.row1; break;
+            case 1: rowColor = GAME_COLORS.brick.row2; break;
+            case 2: rowColor = GAME_COLORS.brick.row3; break;
+            case 3: rowColor = GAME_COLORS.brick.row4; break;
+            case 4: rowColor = GAME_COLORS.brick.row5; break;
+            case 5: rowColor = GAME_COLORS.brick.row6; break;
+            default: rowColor = GAME_COLORS.brick.row1;
+          }
+          
+          // 벽돌 그라데이션 설정
+          const brickGradient = this.ctx.createLinearGradient(
+            brick.x, brick.y,
+            brick.x, brick.y + brick.height
+          );
+          
+          // 벽돌 타입에 따른 스타일 적용
+          if (brick.type === BrickType.NORMAL) {
+            // 일반 벽돌은 표준 그라데이션
+            brickGradient.addColorStop(0, lightenColor(rowColor.top, 10));
+            brickGradient.addColorStop(1, rowColor.bottom);
+          } else if (brick.type === BrickType.ENHANCED) {
+            // 강화 벽돌은 반짝이는 효과
+            const glitterEffect = getCurrentTime() % 1000 < 500;
+            brickGradient.addColorStop(0, glitterEffect ? lightenColor(rowColor.top, 50) : rowColor.top);
+            brickGradient.addColorStop(1, rowColor.bottom);
+          } else if (brick.type === BrickType.BONUS) {
+            // 보너스 벽돌은 밝은 파란색 계열
+            brickGradient.addColorStop(0, lightenColor(rowColor.top, 30));
+            brickGradient.addColorStop(1, darkenColor(rowColor.bottom, 10));
           }
           
           // 벽돌 그림자
@@ -573,34 +565,6 @@ export class BreakoutGameEngine {
           this.ctx.closePath();
           
           // 벽돌 본체 - 그라데이션 적용
-          const brickGradient = this.ctx.createLinearGradient(
-            brick.x, brick.y, 
-            brick.x, brick.y + brick.height
-          );
-          
-          // 벽돌 타입에 따라 추가 효과
-          if (brick.type === BrickType.ENHANCED) {
-            // 강화 벽돌의 경우 금속 효과
-            brickGradient.addColorStop(0, this.lightenColor(rowColor.top, 10));
-            brickGradient.addColorStop(0.5, rowColor.top);
-            brickGradient.addColorStop(1, rowColor.bottom);
-          } else if (brick.type === BrickType.BONUS) {
-            // 보너스 벽돌의 경우 반짝이는 효과
-            const glitterEffect = this.time() % 1000 < 500;
-            brickGradient.addColorStop(0, glitterEffect ? this.lightenColor(rowColor.top, 50) : rowColor.top);
-            brickGradient.addColorStop(1, rowColor.bottom);
-          } else if (brick.type === BrickType.POWERUP) {
-            // 파워업 벽돌의 경우 그라데이션 효과
-            brickGradient.addColorStop(0, this.lightenColor(rowColor.top, 30));
-            brickGradient.addColorStop(0.5, rowColor.top);
-            brickGradient.addColorStop(1, this.darkenColor(rowColor.bottom, 10));
-          } else {
-            // 일반 벽돌
-            brickGradient.addColorStop(0, rowColor.top);
-            brickGradient.addColorStop(1, rowColor.bottom);
-          }
-          
-          // 벽돌 그리기
           this.ctx.beginPath();
           this.ctx.rect(brick.x, brick.y, brick.width, brick.height);
           this.ctx.fillStyle = brickGradient;
@@ -634,31 +598,6 @@ export class BreakoutGameEngine {
         }
       }
     }
-  }
-
-  // 현재 시간 밀리초 반환
-  private time(): number {
-    return new Date().getTime();
-  }
-
-  // 색상 어둡게 하기
-  private darkenColor(hex: string, percent: number): string {
-    const num = parseInt(hex.replace("#", ""), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = Math.max(0, (num >> 16) - amt);
-    const G = Math.max(0, (num >> 8 & 0x00FF) - amt);
-    const B = Math.max(0, (num & 0x0000FF) - amt);
-    return "#" + (0x1000000 + (R << 16) + (G << 8) + B).toString(16).slice(1);
-  }
-
-  // 색상 밝게 하기
-  private lightenColor(hex: string, percent: number): string {
-    const num = parseInt(hex.replace("#", ""), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = Math.min(255, (num >> 16) + amt);
-    const G = Math.min(255, (num >> 8 & 0x00FF) + amt);
-    const B = Math.min(255, (num & 0x0000FF) + amt);
-    return "#" + (0x1000000 + (R << 16) + (G << 8) + B).toString(16).slice(1);
   }
 
   // 게임 정지

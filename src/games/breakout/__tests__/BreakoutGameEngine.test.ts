@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import { BreakoutGameEngine } from './BreakoutGameEngine';
-import { GameState } from './types';
+import { BreakoutGameEngine } from '../controllers/BreakoutGameEngine';
+import { GameState } from '../types';
 
 // Canvas 및 Context 모의 객체 생성
 class MockCanvasRenderingContext2D {
