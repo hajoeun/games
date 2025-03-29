@@ -24,6 +24,13 @@ const games: GameInfo[] = [
     path: '/games/breakout',
     imageUrl: '/images/breakout-thumbnail.png',
   },
+  {
+    id: '2048',
+    title: '2048',
+    description: '같은 숫자 타일을 밀어 합쳐 2048을 만드는 퍼즐 게임입니다!',
+    path: '/games/2048',
+    imageUrl: '/images/2048-thumbnail.png',
+  },
 ]
 
 const Home: React.FC = () => {
@@ -46,49 +53,31 @@ const Home: React.FC = () => {
         </header>
 
         <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-[30px]">
-          <div className="rounded-[10px] overflow-hidden bg-[rgba(20,20,40,0.7)] border-2 border-[#444488] shadow-[0_10px_20px_rgba(0,0,0,0.3),0_0_15px_rgba(0,100,255,0.3)] transition-[transform_0.3s,box-shadow_0.3s] hover:translate-y-[-10px] hover:scale-[1.02] hover:shadow-[0_15px_30px_rgba(0,0,0,0.4),0_0_20px_rgba(0,150,255,0.5)]">
-            <Link to="/games/breakout" className="block">
-              <div className="h-[200px] bg-[#000022] overflow-hidden relative after:content-[''] after:absolute after:top-0 after:left-0 after:right-0 after:h-[30%] after:bg-gradient-to-b after:from-[rgba(0,0,40,0.6)] after:to-transparent after:z-[1]">
-                <img
-                  src="/images/breakout-thumbnail.png"
-                  alt="벽돌깨기 게임 이미지"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.05]"
-                />
-              </div>
-              <h2
-                className="text-[1.5rem] my-[15px] mx-[15px] text-center text-white font-['Press_Start_2P','Courier_New',monospace]"
-                style={{ textShadow: '0 0 8px #5555ff' }}
-              >
-                벽돌깨기
-              </h2>
-              <p className="text-[1rem] text-[#aaaaff] my-0 mx-[15px] mb-[15px] text-center leading-[1.5]">
-                패들을 움직여 모든 벽돌을 부수는 클래식 게임
-              </p>
-            </Link>
-          </div>
-
-          <div className="rounded-[10px] overflow-hidden bg-[rgba(20,20,40,0.7)] border-2 border-[#444488] shadow-[0_10px_20px_rgba(0,0,0,0.3),0_0_15px_rgba(0,100,255,0.3)] transition-[transform_0.3s,box-shadow_0.3s] hover:translate-y-[-10px] hover:scale-[1.02] hover:shadow-[0_15px_30px_rgba(0,0,0,0.4),0_0_20px_rgba(0,150,255,0.5)]">
-            <Link to="/games/tetris" className="block">
-              <div className="h-[200px] bg-[#000022] overflow-hidden relative after:content-[''] after:absolute after:top-0 after:left-0 after:right-0 after:h-[30%] after:bg-gradient-to-b after:from-[rgba(0,0,40,0.6)] after:to-transparent after:z-[1]">
-                <img
-                  src="/images/tetris-thumbnail.png"
-                  alt="테트리스 게임 이미지"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.05]"
-                />
-              </div>
-              <h2
-                className="text-[1.5rem] my-[15px] mx-[15px] text-center text-white font-['Press_Start_2P','Courier_New',monospace]"
-                style={{ textShadow: '0 0 8px #5555ff' }}
-              >
-                테트리스
-              </h2>
-              <p className="text-[1rem] text-[#aaaaff] my-0 mx-[15px] mb-[15px] text-center leading-[1.5]">
-                떨어지는 블록을 회전하고 쌓아 줄을 완성하는 게임
-              </p>
-            </Link>
-          </div>
-
-          {/* 추가 게임 카드 */}
+          {games.map((game) => (
+            <div
+              key={game.id}
+              className="rounded-[10px] overflow-hidden bg-[rgba(20,20,40,0.7)] border-2 border-[#444488] shadow-[0_10px_20px_rgba(0,0,0,0.3),0_0_15px_rgba(0,100,255,0.3)] transition-[transform_0.3s,box-shadow_0.3s] hover:translate-y-[-10px] hover:scale-[1.02] hover:shadow-[0_15px_30px_rgba(0,0,0,0.4),0_0_20px_rgba(0,150,255,0.5)]"
+            >
+              <Link to={game.path} className="block">
+                <div className="h-[200px] bg-[#000022] overflow-hidden relative after:content-[''] after:absolute after:top-0 after:left-0 after:right-0 after:h-[30%] after:bg-gradient-to-b after:from-[rgba(0,0,40,0.6)] after:to-transparent after:z-[1]">
+                  <img
+                    src={game.imageUrl}
+                    alt={`${game.title} 게임 이미지`}
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.05]"
+                  />
+                </div>
+                <h2
+                  className="text-[1.5rem] my-[15px] mx-[15px] text-center text-white font-['Press_Start_2P','Courier_New',monospace]"
+                  style={{ textShadow: '0 0 8px #5555ff' }}
+                >
+                  {game.title}
+                </h2>
+                <p className="text-[1rem] text-[#aaaaff] my-0 mx-[15px] mb-[15px] text-center leading-[1.5]">
+                  {game.description}
+                </p>
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
     </div>
