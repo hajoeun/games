@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Language, getDefaultLanguage, useTranslation } from '../i18n'
 
 interface GameInfo {
   id: string
@@ -34,29 +35,57 @@ const games: GameInfo[] = [
 ]
 
 const Home: React.FC = () => {
+  const [language, setLanguage] = useState<Language>(getDefaultLanguage())
+  const t = useTranslation(language)
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language') as Language
+    if (savedLanguage) {
+      setLanguage(savedLanguage)
+    }
+  }, [])
+
+  const handleLanguageChange = (newLanguage: Language) => {
+    setLanguage(newLanguage)
+    localStorage.setItem('language', newLanguage)
+  }
+
   return (
     <div className="min-h-screen w-full py-8 px-5 overflow-hidden relative">
       <div className="max-w-[1200px] mx-auto relative">
+        {/* 언어 선택 */}
+        <div className="absolute top-0 right-0 z-10">
+          <select
+            value={language}
+            onChange={(e) => handleLanguageChange(e.target.value as Language)}
+            className="classic-select px-2 py-1 font-geneva-9"
+          >
+            <option value="ko">한국어</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="zh">中文</option>
+            <option value="es">Español</option>
+          </select>
+        </div>
+
         {/* 클래식 메뉴바 */}
         <div className="classic-menu-bar mb-4">
           <div className="menu-item">🍎</div>
-          <div className="menu-item">파일</div>
-          <div className="menu-item">편집</div>
-          <div className="menu-item">보기</div>
-          <div className="menu-item">특별</div>
-          <div className="menu-item">도움말</div>
+          <div className="menu-item">{t.menu.file}</div>
+          <div className="menu-item">{t.menu.edit}</div>
+          <div className="menu-item">{t.menu.view}</div>
+          <div className="menu-item">{t.menu.special}</div>
+          <div className="menu-item">{t.menu.help}</div>
         </div>
 
         {/* 메인 창 */}
         <div className="classic-window mb-8">
           <div className="classic-title-bar">
-            <div className="title">클래식 게임 아케이드</div>
+            <div className="title">{t.main.title}</div>
           </div>
           <div className="p-4 text-center">
-            <h1 className="text-2xl mb-2 font-chicago">클래식 게임 아케이드</h1>
-            <p className="text-base font-geneva-9 mb-4">
-              리액트로 구현한 클래식 게임 모음
-            </p>
+            <h1 className="text-2xl mb-2 font-chicago">{t.main.title}</h1>
+            <p className="text-base font-geneva-9 mb-4">{t.main.subtitle}</p>
           </div>
         </div>
 
@@ -66,22 +95,24 @@ const Home: React.FC = () => {
             <Link key={game.id} to={game.path} className="block">
               <div className="classic-window h-full">
                 <div className="classic-title-bar">
-                  <div className="title">{game.title}</div>
+                  <div className="title">{t.games[game.id].title}</div>
                 </div>
                 <div className="p-3">
                   <div className="bg-classic-secondary p-0.5 mb-3">
                     <img
                       src={game.imageUrl}
-                      alt={`${game.title} 게임 이미지`}
+                      alt={`${t.games[game.id].title} ${
+                        t.games[game.id].description
+                      }`}
                       className="w-full h-40 object-cover"
                     />
                   </div>
                   <p className="font-monaco text-sm mb-3 min-h-[3em]">
-                    {game.description}
+                    {t.games[game.id].description}
                   </p>
                   <div className="text-center">
                     <button className="classic-button-default">
-                      플레이하기
+                      {t.button.play}
                     </button>
                   </div>
                 </div>
@@ -91,7 +122,7 @@ const Home: React.FC = () => {
         </div>
 
         <footer className="mt-8 text-center text-classic-secondary text-xs font-monaco">
-          <p>&copy; 2023 클래식 게임 아케이드. 모든 권리 보유.</p>
+          <p>{t.footer.copyright}</p>
         </footer>
       </div>
     </div>

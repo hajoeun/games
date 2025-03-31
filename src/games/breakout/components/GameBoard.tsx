@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { BreakoutGameEngine } from '../controllers/BreakoutGameEngine'
 import { GameState } from '../types'
+import { TranslationType } from '../i18n/index'
 
 interface GameBoardProps {
   onScoreChange: (score: number) => void
@@ -13,6 +14,7 @@ interface GameBoardProps {
   score: number
   onStartGame: () => void
   onRestartGame: () => void
+  t: TranslationType
 }
 
 const GameBoard: React.FC<GameBoardProps> = ({
@@ -26,6 +28,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   score,
   onStartGame,
   onRestartGame,
+  t,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [gameEngine, setGameEngine] = useState<BreakoutGameEngine | null>(null)
@@ -90,19 +93,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
       {gameState === GameState.START && (
         <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center text-center bg-game-board bg-opacity-90 text-game-text z-10 p-5">
           <h1 className="text-3xl mb-8 text-game-highlight font-chicago">
-            벽돌깨기
+            {t.game.title}
           </h1>
-          <p className="text-xl mb-6 font-monaco">
-            시작하려면 스페이스 바를 누르거나
-            <br />
-            아래 버튼을 클릭하세요
-          </p>
+          <p
+            className="text-xl mb-6 font-monaco"
+            dangerouslySetInnerHTML={{ __html: t.messages.startInstruction }}
+          ></p>
           <button onClick={handleLocalStartGame} className="game-button mb-4">
-            게임 시작
+            {t.game.start}
           </button>
           <div className="text-base mt-4 font-monaco">
-            <p>← → 키: 패들 좌우 이동</p>
-            <p>스페이스 바: 게임 시작/공 발사</p>
+            <p>{t.controls.move}</p>
+            <p>{t.controls.launch}</p>
           </div>
         </div>
       )}
@@ -110,13 +112,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
       {gameState === GameState.GAME_OVER && (
         <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center text-center bg-game-board bg-opacity-90 text-game-text z-10 p-5">
           <h2 className="text-3xl mb-6 text-game-warning font-chicago">
-            GAME OVER
+            {t.messages.gameOver}
           </h2>
           <p className="text-xl mb-6 font-monaco">
-            최종 점수: {score.toString().padStart(6, '0')}
+            {t.stats.finalScore}: {score.toString().padStart(6, '0')}
           </p>
           <button onClick={handleLocalRestartGame} className="game-button">
-            다시 시작
+            {t.game.restart}
           </button>
         </div>
       )}
@@ -124,17 +126,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
       {gameState === GameState.LEVEL_CLEAR && (
         <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center text-center bg-game-board bg-opacity-90 text-game-text z-10 p-5">
           <h2 className="text-3xl mb-6 text-game-highlight font-chicago">
-            LEVEL {level} CLEAR!
+            {t.messages.levelComplete.replace('{level}', level.toString())}
           </h2>
-          <p className="text-xl mb-6 font-monaco">
-            다음 레벨을 시작하려면
-            <br />
-            스페이스 바를 누르거나
-            <br />
-            아래 버튼을 클릭하세요
-          </p>
+          <p
+            className="text-xl mb-6 font-monaco"
+            dangerouslySetInnerHTML={{
+              __html: t.messages.nextLevelInstruction,
+            }}
+          ></p>
           <button onClick={handleLocalStartGame} className="game-button">
-            다음 레벨
+            {t.game.nextLevel}
           </button>
         </div>
       )}

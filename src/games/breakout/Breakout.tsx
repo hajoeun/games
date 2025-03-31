@@ -3,8 +3,13 @@ import { Link } from 'react-router-dom'
 import { GameState } from './types'
 import GameBoard from './components/GameBoard'
 import GameHeader from './components/GameHeader'
+import { useTranslation, Language } from './i18n/index'
+import { Helmet } from 'react-helmet-async'
 
 const Breakout: React.FC = () => {
+  const [language, setLanguage] = useState<Language>('ko')
+  const t = useTranslation(language)
+
   const [gameState, setGameState] = useState<GameState>(GameState.START)
   const [score, setScore] = useState(0)
   const [lives, setLives] = useState(3)
@@ -40,32 +45,52 @@ const Breakout: React.FC = () => {
       className="min-h-screen w-full py-8 px-4"
       style={{ backgroundColor: '#f0f0f0' }}
     >
+      <Helmet>
+        <title>{t.meta.title}</title>
+        <meta name="description" content={t.meta.description} />
+      </Helmet>
+
       <div className="container mx-auto max-w-5xl">
         <div className="classic-window">
           <div className="classic-title-bar">
-            <div className="title">벽돌깨기</div>
+            <div className="title">{t.game.title}</div>
           </div>
 
           <div className="p-4">
             <div className="flex flex-col items-center">
+              {/* 언어 선택 */}
+              <div className="absolute top-4 right-4 z-10">
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as Language)}
+                  className="classic-select px-2 py-1 font-geneva-9"
+                >
+                  <option value="ko">한국어</option>
+                  <option value="en">English</option>
+                  <option value="ja">日本語</option>
+                  <option value="zh">中文</option>
+                  <option value="es">Español</option>
+                </select>
+              </div>
+
               {/* 게임 정보 헤더 */}
               <div className="flex justify-between w-full max-w-[800px] mb-4">
                 <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
-                  <div className="text-sm text-game-text">점수</div>
+                  <div className="text-sm text-game-text">{t.stats.score}</div>
                   <div className="font-bold text-xl text-game-text">
                     {score}
                   </div>
                 </div>
 
                 <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
-                  <div className="text-sm text-game-text">레벨</div>
+                  <div className="text-sm text-game-text">{t.stats.level}</div>
                   <div className="font-bold text-xl text-game-text">
                     {level}
                   </div>
                 </div>
 
                 <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
-                  <div className="text-sm text-game-text">생명</div>
+                  <div className="text-sm text-game-text">{t.stats.lives}</div>
                   <div className="font-bold text-xl text-game-text">
                     {lives}
                   </div>
@@ -85,18 +110,19 @@ const Breakout: React.FC = () => {
                   score={score}
                   onStartGame={handleStartGame}
                   onRestartGame={handleRestartGame}
+                  t={t}
                 />
               </div>
 
               {/* 게임 설명 */}
               <div className="mt-4 text-center max-w-[800px]">
                 <div className="classic-dialog">
-                  <h3 className="text-base font-chicago mb-2">조작 방법</h3>
+                  <h3 className="text-base font-chicago mb-2">
+                    {t.controls.title}
+                  </h3>
+                  <p className="text-sm font-monaco mb-1">{t.controls.move}</p>
                   <p className="text-sm font-monaco mb-1">
-                    ← → 키: 패들 좌우 이동
-                  </p>
-                  <p className="text-sm font-monaco mb-1">
-                    스페이스 바: 게임 시작/공 발사
+                    {t.controls.launch}
                   </p>
                 </div>
               </div>
@@ -107,7 +133,7 @@ const Breakout: React.FC = () => {
         {/* 홈으로 이동 버튼 */}
         <div className="mt-4 text-center">
           <Link to="/" className="classic-button inline-block">
-            홈으로
+            {t.buttons.home}
           </Link>
         </div>
       </div>

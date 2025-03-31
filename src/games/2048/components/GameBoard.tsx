@@ -8,6 +8,9 @@ import { MIN_SWIPE_DISTANCE, ANIMATION_DURATION } from '../constants'
 import { boardToTiles, updateTiles } from '../utils'
 import '../styles/animation.css'
 import Tile from './Tile'
+import { translations } from '../i18n'
+
+type Translation = typeof translations.en
 
 // GameHeader 컴포넌트
 interface GameHeaderProps {
@@ -48,13 +51,14 @@ const GameHeader: React.FC<GameHeaderProps> = ({
 interface GameControlsProps {
   onMove: (direction: Direction) => void
   disabled: boolean
+  t: Translation
 }
 
-const GameControls: React.FC<GameControlsProps> = ({ onMove, disabled }) => {
+const GameControls: React.FC<GameControlsProps> = ({ onMove, disabled, t }) => {
   return (
     <div className="flex flex-col items-center mt-6">
       <div className="text-center mb-2 text-game-text">
-        키보드 화살표 또는 아래 버튼 사용
+        {t.instructions.controls}
       </div>
 
       <div className="grid grid-cols-3 gap-2 w-full max-w-xs">
@@ -64,7 +68,7 @@ const GameControls: React.FC<GameControlsProps> = ({ onMove, disabled }) => {
             className="w-16 h-16 bg-classic-secondary border-2 border-game-text text-game-text font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
             onClick={() => onMove(Direction.UP)}
             disabled={disabled}
-            aria-label="위로 이동"
+            aria-label={t.directions.up}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -89,7 +93,7 @@ const GameControls: React.FC<GameControlsProps> = ({ onMove, disabled }) => {
             className="w-16 h-16 bg-classic-secondary border-2 border-game-text text-game-text font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
             onClick={() => onMove(Direction.LEFT)}
             disabled={disabled}
-            aria-label="왼쪽으로 이동"
+            aria-label={t.directions.left}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -117,7 +121,7 @@ const GameControls: React.FC<GameControlsProps> = ({ onMove, disabled }) => {
             className="w-16 h-16 bg-classic-secondary border-2 border-game-text text-game-text font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
             onClick={() => onMove(Direction.RIGHT)}
             disabled={disabled}
-            aria-label="오른쪽으로 이동"
+            aria-label={t.directions.right}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -142,7 +146,7 @@ const GameControls: React.FC<GameControlsProps> = ({ onMove, disabled }) => {
             className="w-16 h-16 bg-classic-secondary border-2 border-game-text text-game-text font-bold rounded-md disabled:opacity-50 flex items-center justify-center"
             onClick={() => onMove(Direction.DOWN)}
             disabled={disabled}
-            aria-label="아래로 이동"
+            aria-label={t.directions.down}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -172,6 +176,7 @@ interface GameOverOverlayProps {
   onReset: () => void
   onContinue: () => void
   showContinue: boolean
+  t: Translation
 }
 
 const GameOverOverlay: React.FC<GameOverOverlayProps> = ({
@@ -180,25 +185,28 @@ const GameOverOverlay: React.FC<GameOverOverlayProps> = ({
   onReset,
   onContinue,
   showContinue,
+  t,
 }) => {
   return (
     <div className="game-over dark:bg-opacity-80 bg-game-board bg-opacity-80">
       <h2 className="text-2xl font-chicago text-game-text">
-        {hasWon ? '축하합니다!' : '게임 오버!'}
+        {hasWon ? t.status.win : t.status.gameOver}
       </h2>
       <p className="text-lg mb-4 text-game-text">
-        {hasWon ? '2048 타일에 도달했습니다!' : '더 이상 이동할 수 없습니다.'}
+        {hasWon ? t.messages.win : t.messages.gameOver}
       </p>
-      <div className="text-xl font-bold mb-6 text-game-text">점수: {score}</div>
+      <div className="text-xl font-bold mb-6 text-game-text">
+        {t.stats.score}: {score}
+      </div>
 
       <div className="flex flex-col space-y-2">
         {showContinue && (
           <button onClick={onContinue} className="game-button">
-            계속하기
+            {t.game.continue}
           </button>
         )}
         <button onClick={onReset} className="game-button">
-          새 게임
+          {t.game.newGame}
         </button>
       </div>
     </div>
@@ -210,6 +218,7 @@ interface GameBoardProps {
   onMove: (direction: Direction) => void
   onReset: () => void
   onContinue: () => void
+  t: Translation
 }
 
 const GameBoard: React.FC<GameBoardProps> = ({
@@ -217,6 +226,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   onMove,
   onReset,
   onContinue,
+  t,
 }) => {
   const boardRef = useRef<HTMLDivElement>(null)
   const [tileSize, setTileSize] = useState(0)
@@ -382,18 +392,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
     <div className="game-container w-full max-w-md mx-auto flex flex-col items-center">
       <div className="flex justify-between w-full mb-4">
         <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
-          <div className="text-sm text-game-text">점수</div>
+          <div className="text-sm text-game-text">{t.stats.score}</div>
           <div className="font-bold text-xl text-game-text">
             {gameState.score}
           </div>
         </div>
 
         <button onClick={onReset} className="game-button">
-          새 게임
+          {t.game.newGame}
         </button>
 
         <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
-          <div className="text-sm text-game-text">최고 점수</div>
+          <div className="text-sm text-game-text">{t.stats.bestScore}</div>
           <div className="font-bold text-xl text-game-text">
             {gameState.bestScore}
           </div>
@@ -434,17 +444,21 @@ const GameBoard: React.FC<GameBoardProps> = ({
             onReset={onReset}
             onContinue={onContinue}
             showContinue={gameState.hasWon && !gameState.continueAfterWin}
+            t={t}
           />
         )}
       </div>
 
       {/* 게임 컨트롤 */}
-      <GameControls onMove={handleControlMove} disabled={gameState.gameOver} />
+      <GameControls
+        onMove={handleControlMove}
+        disabled={gameState.gameOver}
+        t={t}
+      />
 
       {/* 설명 */}
       <p className="text-sm text-game-text mt-4 text-center">
-        2048 타일에 도달하면 승리! 방향키나 스와이프로 같은 숫자 타일을
-        합치세요.
+        {t.instructions.controls}
       </p>
     </div>
   )

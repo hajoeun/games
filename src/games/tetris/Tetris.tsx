@@ -22,8 +22,13 @@ import GameControls from './components/GameControls'
 import GameInfo from './components/GameInfo'
 import MobileControls from './components/MobileControls'
 import { GameController, TouchController } from './controllers/GameController'
+import { Language, getDefaultLanguage, useTranslation } from './i18n'
 
 const Tetris: React.FC = () => {
+  // 언어 상태 관리
+  const [language, setLanguage] = useState<Language>(getDefaultLanguage())
+  const t = useTranslation(language)
+
   // 모바일 여부 감지
   const [isMobile, setIsMobile] = useState<boolean>(false)
 
@@ -35,7 +40,7 @@ const Tetris: React.FC = () => {
   const [hasHoldUsed, setHasHoldUsed] = useState<boolean>(false)
   const [gameStatus, setGameStatus] = useState<GameStatus>(
     GameStatus.START_SCREEN
-  ) // 초기 상태를 시작 화면으로 변경
+  )
   const [gameStats, setGameStats] = useState<GameStats>({
     score: 0,
     level: 1,
@@ -53,6 +58,20 @@ const Tetris: React.FC = () => {
   const controllerRef = useRef<GameController | null>(null)
   const touchControllerRef = useRef<TouchController | null>(null)
   const boardRef = useRef<HTMLDivElement>(null)
+
+  // 언어 변경 핸들러
+  const handleLanguageChange = (newLanguage: Language) => {
+    setLanguage(newLanguage)
+    localStorage.setItem('language', newLanguage)
+  }
+
+  // 언어 설정 불러오기
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language') as Language
+    if (savedLanguage) {
+      setLanguage(savedLanguage)
+    }
+  }, [])
 
   // 모바일 환경 감지
   useEffect(() => {
@@ -518,15 +537,15 @@ const Tetris: React.FC = () => {
   const pageTitle = useMemo(() => {
     switch (gameStatus) {
       case GameStatus.START_SCREEN:
-        return '테트리스 | 시작 화면'
+        return t.status.startScreen
       case GameStatus.PAUSED:
-        return '테트리스 | 일시정지'
+        return t.status.paused
       case GameStatus.GAME_OVER:
-        return '테트리스 | 게임 오버'
+        return t.status.gameOver
       default:
-        return '테트리스'
+        return t.status.playing
     }
-  }, [gameStatus])
+  }, [gameStatus, t])
 
   // getHighScore 함수 추가
   const getHighScore = () => {
@@ -548,17 +567,29 @@ const Tetris: React.FC = () => {
   return (
     <div className="min-h-screen w-full py-8 px-4">
       <Helmet>
-        <title>테트리스 - 클래식 게임 아케이드</title>
-        <meta
-          name="description"
-          content="클래식 테트리스 게임입니다. 블록을 쌓아 줄을 완성하세요!"
-        />
+        <title>{t.meta.title}</title>
+        <meta name="description" content={t.meta.description} />
       </Helmet>
 
       <div className="container mx-auto max-w-5xl">
+        {/* 언어 선택 */}
+        <div className="absolute top-4 right-4 z-10">
+          <select
+            value={language}
+            onChange={(e) => handleLanguageChange(e.target.value as Language)}
+            className="classic-select px-2 py-1 font-geneva-9"
+          >
+            <option value="ko">한국어</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="zh">中文</option>
+            <option value="es">Español</option>
+          </select>
+        </div>
+
         <div className="classic-window">
           <div className="classic-title-bar">
-            <div className="title">테트리스</div>
+            <div className="title">{t.game.title}</div>
           </div>
 
           <div className="p-4">
@@ -567,19 +598,20 @@ const Tetris: React.FC = () => {
               {gameStatus === GameStatus.START_SCREEN && (
                 <div className="game-area w-full max-w-md p-6 text-center">
                   <h1 className="text-2xl font-chicago mb-4 text-game-highlight">
-                    테트리스
+                    {t.game.title}
                   </h1>
                   <p className="text-game-text mb-6">
-                    방향키로 블록을 움직이고, 스페이스바로 빠르게 내립니다.
+                    {t.instructions.controls}
                   </p>
                   <div className="mt-6">
                     <button onClick={startGame} className="game-button">
-                      게임 시작
+                      {t.game.start}
                     </button>
                   </div>
                   <div className="mt-4 text-sm text-game-text">
                     <p>
-                      레벨: {gameStats.level} | 최고 점수: {getHighScore()}
+                      {t.stats.level}: {gameStats.level} | {t.stats.highScore}:{' '}
+                      {getHighScore()}
                     </p>
                   </div>
                 </div>
@@ -592,18 +624,20 @@ const Tetris: React.FC = () => {
                   <div className="game-area p-4 min-w-[300px]">
                     <div className="flex justify-between items-center mb-2">
                       <h2 className="text-lg font-chicago text-game-highlight">
-                        테트리스
+                        {t.game.title}
                       </h2>
                       <button
                         onClick={togglePause}
                         className="classic-button"
                         aria-label={
                           gameStatus === GameStatus.PAUSED
-                            ? '게임 재개'
-                            : '게임 일시정지'
+                            ? t.game.resume
+                            : t.game.pause
                         }
                       >
-                        {gameStatus === GameStatus.PAUSED ? '재개' : '일시정지'}
+                        {gameStatus === GameStatus.PAUSED
+                          ? t.game.resume
+                          : t.game.pause}
                       </button>
                     </div>
 
@@ -615,7 +649,7 @@ const Tetris: React.FC = () => {
                       />
                     </div>
 
-                    {/* 모바일 컨트롤 (모바일에서만 표시) */}
+                    {/* 모바일 컨트롤 */}
                     {isMobile && (
                       <div className="mt-4">
                         <MobileControls
@@ -637,13 +671,13 @@ const Tetris: React.FC = () => {
                         <div className="classic-dialog p-6 text-center w-[80%] max-w-[400px]">
                           <h2 className="text-xl font-chicago mb-4">
                             {gameStatus === GameStatus.PAUSED
-                              ? '일시 정지'
-                              : '게임 오버'}
+                              ? t.game.pause
+                              : t.messages.gameOver}
                           </h2>
                           <p className="mb-6">
                             {gameStatus === GameStatus.PAUSED
-                              ? '게임이 일시 정지되었습니다.'
-                              : `점수: ${gameStats.score} | 레벨: ${gameStats.level}`}
+                              ? t.messages.paused
+                              : `${t.stats.score}: ${gameStats.score} | ${t.stats.level}: ${gameStats.level}`}
                           </p>
 
                           {gameStatus === GameStatus.PAUSED ? (
@@ -651,14 +685,14 @@ const Tetris: React.FC = () => {
                               onClick={togglePause}
                               className="classic-button-default"
                             >
-                              계속하기
+                              {t.game.resume}
                             </button>
                           ) : (
                             <button
                               onClick={restartGame}
                               className="classic-button-default"
                             >
-                              다시 시작
+                              {t.game.restart}
                             </button>
                           )}
                         </div>
@@ -669,23 +703,29 @@ const Tetris: React.FC = () => {
                   {/* 게임 정보 패널 */}
                   <div className="classic-window min-w-[200px]">
                     <div className="classic-title-bar">
-                      <div className="title">정보</div>
+                      <div className="title">{t.info.title}</div>
                     </div>
                     <div className="p-3">
                       <div className="mb-4">
-                        <h3 className="text-base font-chicago mb-1">점수</h3>
+                        <h3 className="text-base font-chicago mb-1">
+                          {t.stats.score}
+                        </h3>
                         <p className="font-monaco text-2xl">
                           {gameStats.score}
                         </p>
                       </div>
                       <div className="mb-4">
-                        <h3 className="text-base font-chicago mb-1">레벨</h3>
+                        <h3 className="text-base font-chicago mb-1">
+                          {t.stats.level}
+                        </h3>
                         <p className="font-monaco text-2xl">
                           {gameStats.level}
                         </p>
                       </div>
                       <div className="mb-4">
-                        <h3 className="text-base font-chicago mb-1">라인</h3>
+                        <h3 className="text-base font-chicago mb-1">
+                          {t.stats.lines}
+                        </h3>
                         <p className="font-monaco text-2xl">
                           {gameStats.lines}
                         </p>
@@ -694,7 +734,7 @@ const Tetris: React.FC = () => {
                       {/* 다음 조각 */}
                       <div className="mt-6 mb-4">
                         <h3 className="text-base font-chicago mb-2">
-                          다음 조각
+                          {t.pieces.next}
                         </h3>
                         <div className="bg-classic-secondary p-2 border-2 border-classic-secondary">
                           <NextPiece piece={nextPiece} />
@@ -703,20 +743,12 @@ const Tetris: React.FC = () => {
 
                       {/* 홀드 조각 */}
                       <div className="mb-4">
-                        <h3 className="text-base font-chicago mb-2">홀드</h3>
+                        <h3 className="text-base font-chicago mb-2">
+                          {t.pieces.hold}
+                        </h3>
                         <div className="bg-classic-secondary p-2 border-2 border-classic-secondary">
-                          <HoldPiece piece={holdPiece} hasUsed={hasHoldUsed} />
+                          <HoldPiece piece={holdPiece} />
                         </div>
-                      </div>
-
-                      {/* 키 설명 */}
-                      <div className="mt-6 text-xs font-monaco">
-                        <p className="mb-1">← → : 좌우 이동</p>
-                        <p className="mb-1">↑ : 회전</p>
-                        <p className="mb-1">↓ : 소프트 드롭</p>
-                        <p className="mb-1">스페이스바 : 하드 드롭</p>
-                        <p className="mb-1">C : 홀드</p>
-                        <p className="mb-1">P : 일시정지</p>
                       </div>
                     </div>
                   </div>

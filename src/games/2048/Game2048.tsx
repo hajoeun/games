@@ -3,6 +3,7 @@
  */
 
 import React, { useCallback, useEffect, useState, useRef } from 'react'
+import { Helmet } from 'react-helmet-async'
 import GameBoard from './components/GameBoard'
 import { Direction, GameState, GameStatus } from './types'
 import {
@@ -17,16 +18,36 @@ import {
   updateTiles,
 } from './utils'
 import { ANIMATION_DURATION } from './constants'
+import { Language, getDefaultLanguage, useTranslation } from './i18n'
 import './styles/animation.css'
 import './styles/theme.css'
 
 const Game2048 = () => {
+  // 언어 상태 관리
+  const [language, setLanguage] = useState<Language>(getDefaultLanguage())
+  const t = useTranslation(language)
+
+  // 다크모드 상태 관리
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches
     }
     return false
   })
+
+  // 언어 변경 핸들러
+  const handleLanguageChange = (newLanguage: Language) => {
+    setLanguage(newLanguage)
+    localStorage.setItem('language', newLanguage)
+  }
+
+  // 언어 설정 불러오기
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language') as Language
+    if (savedLanguage) {
+      setLanguage(savedLanguage)
+    }
+  }, [])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -207,39 +228,134 @@ const Game2048 = () => {
   }, [])
 
   return (
-    <div
-      className="min-h-screen w-full py-8 px-4"
-      style={{
-        backgroundColor: isDarkMode ? 'var(--dark-bg)' : 'var(--light-bg)',
-      }}
-    >
-      <div className="container mx-auto max-w-lg">
+    <div className="min-h-screen w-full py-8 px-4">
+      <Helmet>
+        <title>{t.meta.title}</title>
+        <meta name="description" content={t.meta.description} />
+      </Helmet>
+
+      <div className="container mx-auto max-w-5xl">
         <div className="classic-window">
           <div className="classic-title-bar">
-            <div className="title">2048 게임</div>
+            <div className="title">{t.game.title}</div>
           </div>
 
           <div className="p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h1 className="text-xl font-chicago">2048</h1>
-              <button
-                onClick={toggleDarkMode}
-                className="classic-button"
-                aria-label={
-                  isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환'
-                }
-              >
-                {isDarkMode ? '라이트 모드' : '다크 모드'}
-              </button>
-            </div>
+            <div className="flex flex-col items-center">
+              {/* 언어 선택 */}
+              <div className="absolute top-4 right-4 z-10">
+                <select
+                  value={language}
+                  onChange={(e) =>
+                    handleLanguageChange(e.target.value as Language)
+                  }
+                  className="classic-select px-2 py-1 font-geneva-9"
+                >
+                  <option value="ko">한국어</option>
+                  <option value="en">English</option>
+                  <option value="ja">日本語</option>
+                  <option value="zh">中文</option>
+                  <option value="es">Español</option>
+                </select>
+              </div>
 
-            <div className="game-area">
-              <GameBoard
-                gameState={gameState}
-                onMove={handleMove}
-                onReset={handleReset}
-                onContinue={handleContinue}
-              />
+              {/* 게임 정보 */}
+              <div className="flex justify-between w-full max-w-[800px] mb-4">
+                <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
+                  <div className="text-sm text-game-text">{t.stats.score}</div>
+                  <div className="font-bold text-xl text-game-text">
+                    {gameState.score}
+                  </div>
+                </div>
+
+                <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
+                  <div className="text-sm text-game-text">
+                    {t.stats.bestScore}
+                  </div>
+                  <div className="font-bold text-xl text-game-text">
+                    {gameState.bestScore}
+                  </div>
+                </div>
+
+                {/* 다크모드 토글 */}
+                <div className="bg-classic-secondary border-classic-secondary border-2 p-2 min-w-24 text-center">
+                  <button
+                    onClick={toggleDarkMode}
+                    className="text-sm text-game-text hover:text-game-highlight"
+                  >
+                    {t.settings.darkMode}
+                  </button>
+                </div>
+              </div>
+
+              {/* 게임 보드 */}
+              <div className="game-area p-0 rounded-md overflow-hidden">
+                <GameBoard
+                  gameState={gameState}
+                  onMove={handleMove}
+                  onReset={handleReset}
+                  onContinue={handleContinue}
+                  t={t}
+                />
+              </div>
+
+              {/* 게임 컨트롤 */}
+              <div className="mt-4 flex gap-4">
+                <button
+                  onClick={handleReset}
+                  className="classic-button-default"
+                >
+                  {t.game.newGame}
+                </button>
+              </div>
+
+              {/* 게임 설명 */}
+              <div className="mt-4 text-center max-w-[800px]">
+                <div className="classic-dialog">
+                  <p className="text-sm font-monaco mb-1">
+                    {t.instructions.controls}
+                  </p>
+                </div>
+              </div>
+
+              {/* 승리/게임오버 모달 */}
+              {(gameState.hasWon || gameState.gameOver) && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                  <div className="classic-dialog p-6 text-center">
+                    <h2 className="text-xl font-chicago mb-4">
+                      {gameState.hasWon ? t.status.win : t.status.gameOver}
+                    </h2>
+                    <p className="mb-6">
+                      {gameState.hasWon ? t.messages.win : t.messages.gameOver}
+                    </p>
+                    {gameState.hasWon && !gameState.continueAfterWin && (
+                      <div className="flex flex-col gap-2">
+                        <p className="mb-4">{t.messages.continue}</p>
+                        <button
+                          onClick={handleContinue}
+                          className="classic-button-default mb-2"
+                        >
+                          {t.game.continue}
+                        </button>
+                        <button
+                          onClick={handleReset}
+                          className="classic-button-default"
+                        >
+                          {t.game.newGame}
+                        </button>
+                      </div>
+                    )}
+                    {(gameState.gameOver || gameState.continueAfterWin) && (
+                      <button
+                        onClick={handleReset}
+                        className="classic-button-default"
+                      >
+                        {t.game.restart}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
