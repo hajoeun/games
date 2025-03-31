@@ -1,6 +1,7 @@
 ---
 description: Project architecture rule
 globs: *
+alwaysApply: false
 ---
 ## 아키텍쳐
 

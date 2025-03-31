@@ -1,6 +1,7 @@
 ---
 description: User interface design rule
 globs: tailwind.config.js, *.tsx, *.css
+alwaysApply: false
 ---
 ## 디자인 규칙
 
