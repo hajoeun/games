@@ -66,6 +66,10 @@
 ├── utils.ts             # 게임 로직에 필요한 유틸리티 함수
 ├── components/          # 게임을 구성하는 UI 컴포넌트
 ├── controllers/         # 게임 제어 로직
+├── i18n/                # 국제화 관련 파일 (추가)
+│   ├── en.ts
+│   ├── ko.ts
+│   └── index.ts
 └── __tests__/           # 테스트 코드
     ├── [GameName].test.tsx
     ├── utils.test.ts
@@ -136,6 +140,151 @@
 - **게임 생명주기**: 초기화, 실행, 일시정지, 종료 등 관리
 - **이벤트 핸들링**: 사용자 입력 및 게임 이벤트 처리
 - **렌더링 조정**: 게임 UI 요소의 조합 및 렌더링
+
+### 7. 국제화 (i18n) 구현
+
+게임 내 텍스트를 여러 언어로 제공하기 위해 국제화(i18n)를 구현합니다.
+
+#### 가. 폴더 구조
+
+각 게임 폴더 내에 `i18n` 디렉토리를 생성합니다.
+
+```
+/src/games/[게임명]/
+├── ...
+└── i18n/
+    ├── en.ts         # 영어 번역
+    ├── ko.ts         # 한국어 번역
+    ├── ...           # 기타 지원 언어
+    └── index.ts      # 번역 통합 및 훅 제공
+```
+
+#### 나. 번역 파일 구조 (`[언어코드].ts`)
+
+각 언어 파일은 특정 언어에 대한 번역 문자열을 포함하는 객체를 export 합니다. 일관성을 위해 키 구조를 통일합니다 (예: `meta`, `game`, `stats`, `messages`, `controls`, `buttons`, `directions`).
+
+```typescript
+// 예시: en.ts
+export const en = {
+  meta: {
+    title: 'Game Title',
+    description: 'Game description.',
+  },
+  game: {
+    title: 'Breakout',
+    start: 'Start Game',
+    // ...
+  },
+  stats: {
+    score: 'Score',
+    // ...
+  },
+  messages: {
+    gameOver: 'Game Over',
+    levelComplete: 'Level {level} Complete!', // 동적 값 포함
+    startInstruction: 'Press Spacebar or click...<br />to start', // HTML 포함
+    // ...
+  },
+  // ... 기타 카테고리
+}
+```
+
+#### 다. 번역 통합 (`index.ts`)
+
+`i18n/index.ts` 파일은 다음 역할을 수행합니다:
+- 각 언어 번역 파일을 import 합니다.
+- 모든 번역을 포함하는 `translations` 객체를 export 합니다.
+- 지원하는 언어 코드 타입을 정의합니다 (`Language`).
+- 번역 객체의 구조를 정의하는 `TranslationType` 인터페이스 또는 타입을 export 합니다.
+- 현재 언어에 맞는 번역 객체를 반환하는 `useTranslation` 훅을 제공합니다.
+
+```typescript
+// 예시: i18n/index.ts
+import { en } from './en'
+import { ko } from './ko'
+// ... 다른 언어 import
+
+export const translations = { en, ko, /* ... */ }
+
+export type Language = keyof typeof translations
+
+// TranslationType 인터페이스 또는 타입 정의 (en.ts 구조 기반 추천)
+export type TranslationType = typeof en
+// 또는: export interface TranslationType { ... 상세 정의 ... }
+
+export const useTranslation = (language: Language): TranslationType => {
+  return translations[language] || en // 기본 언어 fallback
+}
+```
+
+#### 라. 컴포넌트에서 사용
+
+1.  **메인 게임 컴포넌트 (`[GameName].tsx`)**:
+    - 언어 상태를 관리합니다 (`useState`).
+    - `useTranslation` 훅을 호출하여 현재 언어의 `t` 객체를 가져옵니다.
+    - 언어 선택 UI (예: `<select>`)를 제공합니다.
+    - 필요한 하위 컴포넌트에 `t` 객체를 prop으로 전달합니다.
+    - `react-helmet-async`의 `Helmet`을 사용하여 `<title>` 및 `<meta name="description">`을 번역합니다.
+
+    ```typescript
+    import { useTranslation, Language } from './i18n/index' // 경로 확인!
+    import { Helmet } from 'react-helmet-async'
+
+    const MyGame: React.FC = () => {
+      const [language, setLanguage] = useState<Language>('ko')
+      const t = useTranslation(language)
+
+      return (
+        <div>
+          <Helmet>
+            <title>{t.meta.title}</title>
+            <meta name="description" content={t.meta.description} />
+          </Helmet>
+          {/* 언어 선택 UI */}
+          <select value={language} onChange={(e) => setLanguage(e.target.value as Language)} className="absolute top-4 right-4 z-10">
+            <option value="ko">한국어</option>
+            <option value="en">English</option>
+            {/* ... */}
+          </select>
+
+          {/* 하위 컴포넌트에 t 전달 */}
+          <GameBoard t={t} /* ...other props */ />
+          {/* ... */}
+        </div>
+      )
+    }
+    ```
+
+2.  **하위 컴포넌트 (`components/*.tsx`)**:
+    - Props 인터페이스에 `t: TranslationType`을 추가합니다.
+    - Prop으로 받은 `t` 객체를 사용하여 텍스트를 렌더링합니다.
+    - 동적 값: 문자열의 `replace` 메서드를 사용합니다 (예: `t.messages.levelComplete.replace('{level}', level.toString())`).
+    - HTML 포함: `dangerouslySetInnerHTML` 속성을 사용합니다 (예: `<p dangerouslySetInnerHTML={{ __html: t.messages.startInstruction }} />`).
+
+    ```typescript
+    import { TranslationType } from '../i18n/index' // 올바른 경로 확인!
+
+    interface GameBoardProps {
+      // ... other props
+      t: TranslationType
+    }
+
+    const GameBoard: React.FC<GameBoardProps> = ({ /* ..., */ t }) => {
+      // ...
+      return (
+        <div>
+          <h1>{t.game.title}</h1>
+          <p>{t.stats.score}: {score}</p>
+          {/* ... */}
+        </div>
+      )
+    }
+    ```
+
+#### 마. 주의사항
+- 모든 사용자 표시 텍스트는 번역 키를 통해 관리합니다. 하드코딩된 문자열을 사용하지 않습니다.
+- 타입 에러 발생 시 `i18n/index.ts`의 `TranslationType` 정의와 실제 번역 파일 구조가 일치하는지, 그리고 import 경로가 올바른지 확인합니다. (`./i18n/index` 또는 `../i18n/index` 등)
+- 개발 서버/TypeScript 서버 재시작이 타입 관련 문제를 해결하는 데 도움이 될 수 있습니다.
 
 ## 테스트 코드 작성
 
@@ -291,7 +440,11 @@ describe('게임 컨트롤러 테스트', () => {
 ├── utils.ts
 ├── components/
 ├── controllers/
-└── __tests__/          # 테스트 코드
+├── i18n/              # 국제화 폴더 추가
+│   ├── en.ts
+│   ├── ko.ts
+│   └── index.ts
+└── __tests__/         # 테스트 코드
     ├── [NewGame].test.tsx
     ├── utils.test.ts
     └── ...
@@ -362,7 +515,11 @@ const GameElement: React.FC = () => {
 - 게임 생명주기 관리
 - UI 컴포넌트 조합
 
-### 9. 테스트 코드 작성하기
+### 9. 국제화(i18n) 설정하기
+
+위에서 설명한 "국제화 (i18n) 구현" 가이드라인에 따라 번역 파일 및 관련 로직을 구현합니다.
+
+### 10. 테스트 코드 작성하기
 
 `__tests__/` 디렉토리에 게임의 각 부분을 테스트하는 코드를 작성합니다:
 - 유틸리티 함수 테스트 (`utils.test.ts`)
@@ -370,7 +527,7 @@ const GameElement: React.FC = () => {
 - 컨트롤러 테스트 (필요한 경우)
 - UI 컴포넌트 테스트 (필요한 경우)
 
-### 10. App.tsx에 라우트 추가하기
+### 11. App.tsx에 라우트 추가하기
 
 `App.tsx` 파일에 새로운 게임의 라우트를 추가합니다:
 
@@ -378,7 +535,7 @@ const GameElement: React.FC = () => {
 <Route path="/games/[새로운게임명]" element={<NewGame />} />
 ```
 
-### 11. 홈 페이지에 게임 추가하기
+### 12. 홈 페이지에 게임 추가하기
 
 `Home.tsx` 파일의 게임 목록에 새 게임을 추가합니다:
 
@@ -395,7 +552,7 @@ const games: GameInfo[] = [
 ];
 ```
 
-### 12. 테스트 및 디버깅
+### 13. 테스트 및 디버깅
 
 새로 구현한 게임을 테스트하고 디버깅합니다:
 - 게임 메커니즘 테스트
@@ -404,16 +561,11 @@ const games: GameInfo[] = [
 - 성능 최적화
 - 자동화된 테스트 실행 및 검증
 
-### 13. SEO 최적화
+### 14. SEO 최적화
 
 게임 페이지에 대한 SEO 최적화를 위해 다음 요소를 고려합니다:
 
-1. **메타 태그 최적화**:
-   - 게임 제목과 설명을 포함하는 `<meta>` 태그
-   - 게임 썸네일 이미지 태그
-   - 게임 페이지 최적화 태그
-2. **sitemap.xml**:
-   - 새로운 게임이 추가될 때마다 sitemap.xml 파일을 업데이트하여 해당 게임의 URL 정보를 추가
-   - 각 게임 URL에 대한 lastmod, changefreq, priority 값을 적절히 설정
+1. **메타 태그 최적화**: `react-helmet-async`를 사용하여 동적으로 번역된 `<title>` 및 `<meta name="description">` 설정 (국제화 가이드라인 참조).
+2. **sitemap.xml**: 새로운 게임이 추가될 때마다 sitemap.xml 파일을 업데이트하여 해당 게임의 URL 정보를 추가합니다. 각 게임 URL에 대한 lastmod, changefreq, priority 값을 적절히 설정합니다.
 
 이 가이드를 따라 구현하면 기존 아키텍처와 일관성 있는 새로운 게임을 추가할 수 있습니다. 
