@@ -6,6 +6,10 @@ export const ko = {
     special: '특별',
     help: '도움말'
   },
+  meta: {
+    title: '무료 온라인 클래식 게임',
+    subtitle: '브라우저에서 즐기는 추억의 아케이드 게임 모음'
+  },
   main: {
     title: '클래식 게임 아케이드',
     subtitle: '리액트로 구현한 클래식 게임 모음'

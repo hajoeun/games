@@ -10,6 +10,10 @@ export const zh = {
     title: '经典游戏街机',
     subtitle: '使用React构建的经典游戏合集'
   },
+  meta: {
+    title: '免费在线经典游戏',
+    subtitle: '浏览器中的复古街机游戏合集'
+  },
   games: {
     tetris: {
       title: '俄罗斯方块',

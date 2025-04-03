@@ -10,6 +10,10 @@ export const ja = {
     title: 'クラシックゲームアーケード',
     subtitle: 'Reactで作られたクラシックゲームコレクション'
   },
+  meta: {
+    title: '無料オンラインクラシックゲーム',
+    subtitle: 'ブラウザで楽しむレトロアーケードゲーム集'
+  },
   games: {
     tetris: {
       title: 'テトリス',

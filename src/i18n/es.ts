@@ -10,6 +10,10 @@ export const es = {
     title: 'Arcade de Juegos Clásicos',
     subtitle: 'Colección de Juegos Clásicos construida con React'
   },
+  meta: {
+    title: 'Juegos Clásicos Gratis Online',
+    subtitle: 'Colección de Juegos Arcade Retro en tu Navegador'
+  },
   games: {
     tetris: {
       title: 'Tetris',
