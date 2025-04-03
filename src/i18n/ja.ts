@@ -8,7 +8,7 @@ export const ja = {
   },
   main: {
     title: 'クラシックゲームアーケード',
-    subtitle: 'Reactで作られたクラシックゲームコレクション'
+    subtitle: 'いつでもどこでも楽しめる思い出のゲーム集'
   },
   meta: {
     title: '無料オンラインクラシックゲーム',

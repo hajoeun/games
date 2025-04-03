@@ -8,7 +8,7 @@ export const es = {
   },
   main: {
     title: 'Arcade de Juegos Clásicos',
-    subtitle: 'Colección de Juegos Clásicos construida con React'
+    subtitle: 'Juegos Clásicos Disponibles en Cualquier Momento y Lugar'
   },
   meta: {
     title: 'Juegos Clásicos Gratis Online',

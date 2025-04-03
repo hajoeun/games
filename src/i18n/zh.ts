@@ -8,7 +8,7 @@ export const zh = {
   },
   main: {
     title: '经典游戏街机',
-    subtitle: '使用React构建的经典游戏合集'
+    subtitle: '随时随地体验经典游戏乐趣'
   },
   meta: {
     title: '免费在线经典游戏',

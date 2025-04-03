@@ -8,7 +8,7 @@ export const en = {
   },
   main: {
     title: 'Classic Game Arcade',
-    subtitle: 'Classic Games Collection Built with React'
+    subtitle: 'Timeless Games Available Anytime, Anywhere'
   },
   meta: {
     title: 'Free Online Classic Games',

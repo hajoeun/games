@@ -12,7 +12,7 @@ export const ko = {
   },
   main: {
     title: '클래식 게임 아케이드',
-    subtitle: '리액트로 구현한 클래식 게임 모음'
+    subtitle: '언제 어디서나 즐기는 추억의 게임 모음'
   },
   games: {
     tetris: {
