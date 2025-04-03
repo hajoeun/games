@@ -13,22 +13,25 @@ interface GameInfo {
 const games: GameInfo[] = [
   {
     id: 'tetris',
-    title: '테트리스',
-    description: '클래식 테트리스 게임입니다. 블록을 쌓아 줄을 완성하세요!',
+    title: 'Tetris Online',
+    description:
+      'Play classic Tetris game for free in your browser. Stack blocks and clear lines in this addictive arcade game!',
     path: '/games/tetris',
     imageUrl: '/images/tetris-thumbnail.png',
   },
   {
     id: 'breakout',
-    title: '벽돌깨기',
-    description: '클래식 벽돌깨기 게임입니다. 공을 튕겨 모든 벽돌을 부수세요!',
+    title: 'Breakout Game',
+    description:
+      'Free online Breakout arcade game. Break all the bricks with the bouncing ball in this classic browser game!',
     path: '/games/breakout',
     imageUrl: '/images/breakout-thumbnail.png',
   },
   {
     id: '2048',
-    title: '2048',
-    description: '같은 숫자 타일을 밀어 합쳐 2048을 만드는 퍼즐 게임입니다!',
+    title: '2048 Puzzle',
+    description:
+      'Play the popular 2048 puzzle game online for free. Merge tiles and reach 2048 in this addictive browser game!',
     path: '/games/2048',
     imageUrl: '/images/2048-thumbnail.png',
   },

@@ -30,28 +30,37 @@ const App: React.FC = () => {
   return (
     <HelmetProvider>
       <Helmet>
-        <title>클래식 게임 아케이드</title>
+        <title>Free Online Classic Games - Browser Arcade</title>
         <meta
           name="description"
-          content="테트리스, 벽돌깨기 등 클래식 게임을 모던한 웹 환경에서 즐겨보세요."
+          content="Play free online classic games including Tetris, Breakout, and 2048. Enjoy retro arcade games directly in your browser without download."
         />
         <meta
           name="keywords"
-          content="테트리스, 벽돌깨기, 2048, 레트로 게임, 클래식 게임"
+          content="free online games, classic games, tetris online, arcade games, browser games, retro games, 2048 game, breakout game, free arcade games"
         />
-        <meta property="og:title" content="클래식 게임 아케이드" />
+        <meta
+          property="og:title"
+          content="Free Online Classic Games - Browser Arcade"
+        />
         <meta
           property="og:description"
-          content="테트리스, 벽돌깨기 등 클래식 게임을 모던한 웹 환경에서 즐겨보세요."
+          content="Play free online classic games including Tetris, Breakout, and 2048. Enjoy retro arcade games directly in your browser without download."
         />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://game.hajoeun.com" />
-        <meta property="og:site_name" content="클래식 게임 아케이드" />
+        <meta
+          property="og:site_name"
+          content="Free Online Classic Games - Browser Arcade"
+        />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="클래식 게임 아케이드" />
+        <meta
+          name="twitter:title"
+          content="Free Online Classic Games - Browser Arcade"
+        />
         <meta
           name="twitter:description"
-          content="테트리스, 벽돌깨기 등 클래식 게임을 모던한 웹 환경에서 즐겨보세요."
+          content="Play free online classic games including Tetris, Breakout, and 2048. Enjoy retro arcade games directly in your browser without download."
         />
         <meta name="twitter:site" content="@hajoeun" />
         <meta name="twitter:creator" content="@hajoeun" />
